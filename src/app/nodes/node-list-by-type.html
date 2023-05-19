@@ -9,6 +9,17 @@
 </ol>
 
 <div class="pull-right">
+  <div class="btn-group">
+  <button class="btn btn-link btn-xs btn-default dropdown-toggle" type="button" id="export-menu"
+  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+  <span class="glyphicon glyphicon-cloud-upload"></span>
+  {{'sendFile' | translate | capitalize}}
+  <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="export-menu" >
+    <li id="translationsCsv" data-toggle="modal" data-target="#translationsCsvModal" ng-click="uploadCSVForSend($event)"><a>{{'translationFile' | translate }}</a></li>
+  </ul>
+</div>
   <a class="btn btn-link btn-xs btn-default" ng-href="#/graphs/{{graph.id}}/nodes-all">
     <span class="glyphicon glyphicon-list"></span>
     {{'allNodes' | translate | capitalize}}
@@ -181,6 +192,7 @@
             <li><a ng-href="api/graphs/{{graph.id}}/types/{{type.id}}/node-trees?{{whereStr}}&select=*&max=-1" type="application/json">JSON</a></li>
             <li><a ng-href="api/graphs/{{graph.id}}/types/{{type.id}}/nodes.csv?{{whereStr}}" type="text/csv">CSV (UTF-8)</a></li>
             <li><a ng-href="api/graphs/{{graph.id}}/types/{{type.id}}/nodes.csv?{{whereStr}}&delimiter=SEMICOLON&lineBreak=CRLF&quoteAll=true&charset=ISO-8859-1" type="text/csv">CSV (Excel, ISO-8859-1)</a></li>
+            <li><a ng-href="api/graphs/{{graph.id}}/types/{{type.id}}/nodes.csv?{{whereStr}}&delimiter=SEMICOLON&lineBreak=CRLF&quoteAll=true&charset=UTF-8&translate=true" type="text/csv">CSV-käännöstiedosto (UTF-8)</a></li>
           </ul>
         </div>
       </div>
@@ -284,4 +296,61 @@
 
 <div ng-show="showJson">
   <pre>{{nodes | json}}</pre>
+</div>
+
+<!-- Modal for upload-->
+<div class="modal fade" id="translationsCsvModal" tabindex="-1" role="dialog" aria-labelledby="translationsCsvModalLabel" aria-hidden="true" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="translationsCsvModalLabel">{{'translationFileSendTitle' | translate}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div>{{'translationSelectFile' | translate}}</div>
+        <div class="file-input">
+          <input type="file" name="file" id="file-upload"/>
+        </div>
+
+
+        <div id="csvInfo"></div>
+
+        <div class="warningsArea" id="warningsArea" hidden>
+          <span class="glyphicon glyphicon-ok-sign iconOk" id="csvOk"></span>
+          <span class="glyphicon glyphicon-alert iconWarning" id="csvWarning"></span>
+          <span class="glyphicon glyphicon-ban-circle iconError" id="csvError"></span>
+      </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="checkCSV()">{{'translationButtonCheckCSV' | translate}}</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{'cancel' | translate | capitalize}}</button>
+        <button type="button" class="btn btn-primary" ng-click="uploadCsvFile()">{{'translationButtonSendCSV' | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for success-->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">{{'translationCsvSendOK' | translate}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{'translationCsvSendOK' | translate}}
+        <div id="csvUpdateInfo"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
 </div>

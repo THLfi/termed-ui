@@ -44,6 +44,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   });
 })
 
+
 .controller('NodeListCtrl', function($scope, $route, $location, $routeParams, $translate, Graph, GraphNodeTreeList, GraphNodeCount, NodeList, Node, TypeList) {
 
   $scope.lang = $translate.use();
@@ -144,7 +145,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
 })
 
-.controller('NodeListByTypeCtrl', function($scope, $route, $location, $routeParams, $translate, Graph, Type, TypeNodeTreeList, TypeNodeCount, TypeList, NodeList) {
+.controller('NodeListByTypeCtrl', function($scope, $route, $location, $routeParams, $translate, Graph, Type, TypeNodeTreeList, TypeNodeCount, TypeList, NodeList, Node) {
   $scope.lang = $translate.use();
 
   $scope.query = ($location.search()).q || "";
@@ -346,6 +347,348 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     $scope.criteriaModel.splice(i, 1);
   };
 
+  $scope.uploadCSVForSend = function(e) {
+    switch(e.currentTarget.id) {
+      case "translationsCsv":
+        var inputFile = document.getElementById('file-upload');
+        inputFile.value = '';
+        var csvInfo = document.getElementById('csvInfo');
+        csvInfo.innerHTML = "";
+        document.getElementById("warningsArea").style.display = 'none'  
+      break;
+      default:
+        console.log('Target not found', e.currentTarget.id);
+    }
+  };
+
+
+
+  $scope.checkCSV = function() {
+
+    const fileInput = document.getElementById('file-upload');
+    var file = fileInput.files[0];
+    if (fileInput.files.length == 0) {
+      return;
+    }
+
+    $translate.use();
+    this.className = '';
+
+ 
+    var csvInfo = document.getElementById('csvInfo');
+    csvInfo.innerHTML = "";
+
+    var template = "";
+    var csvData = null;
+
+    var reader = new FileReader();    
+    reader.readAsText(file);
+    reader.onloadend = () => {
+
+      template = reader.result;
+      csvData = template;
+      
+      var text = template;
+      var lines = text.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
+
+      const headerRow = [];
+      // Download file as UTF-8, so it will work in every OS
+      // So we need to add UTF-8 marks (\ufeff) to the file beginning  
+
+      const validRows = new Map();
+      const invalidRows = new Map();
+      
+      var totalRowsInFile = 0;
+
+      for(var i = 0; i < lines.length; i++) {
+
+        if (headerRow.length == 0 && lines[i].endsWith('type.graph.id')) {
+
+          const myArray = lines[i].split(";");
+
+          myArray.forEach(field => {
+            // console.log(field, csvData[field]);
+            if (headerRow.length == 0) {
+              headerRow.push("\ufeff"+field);
+            } else {
+              headerRow.push(field);
+            }
+            
+          }
+          );
+        } else
+          if (headerRow.length > 0) {
+
+            const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}[\r\n]*$/;
+
+            var id = lines[i].substring(0, lines[i].indexOf(";"));         
+            var graphId = lines[i].substring(lines[i].lastIndexOf(";") + 1);
+
+            id = id.replace(/[^\x00-\x7F]/, "");
+            graphId = graphId.replace(/[^\x00-\x7F]/, "");   
+            
+            if(regexExp.test(id) == false || regexExp.test(graphId) == false) {
+              invalidRows.set((i + 1), $translate.instant('translationIdOrGraphIdMissing'));
+            } else {
+              validRows.set(id, lines[i]);
+            }
+         }
+         totalRowsInFile = i;
+      }
+      var totalDiv = document.createElement('div');
+      var invalidDiv = document.createElement('div');
+      var updateDiv = document.createElement('div');
+
+      totalDiv.textContent = $translate.instant('translationRowsTotal', {count: totalRowsInFile});;
+      csvInfo.append(totalDiv);
+
+      if (headerRow.length == 0){
+
+        invalidDiv.textContent = $translate.instant('translationHeadersMissingOrNotUTF8');
+        csvInfo.append(invalidDiv);
+        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("csvOk").style.display= 'none';
+        document.getElementById("csvWarning").style.display= 'none';
+        document.getElementById("csvError").style.display= 'block';
+
+      } else
+      if (validRows.size == 0){
+
+        invalidDiv.textContent = $translate.instant('translationRowsMissing');
+        csvInfo.append(invalidDiv);
+        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("csvOk").style.display= 'none';
+        document.getElementById("csvWarning").style.display= 'none';
+        document.getElementById("csvError").style.display= 'block';
+      } else
+      if (invalidRows.size == 0) {
+        
+        invalidDiv.textContent = $translate.instant('translationCsvOK', {count: validRows.size});
+        csvInfo.append(invalidDiv);
+        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("csvOk").style.display= 'block';
+        document.getElementById("csvWarning").style.display= 'none';
+        document.getElementById("csvError").style.display= 'none';
+
+      }
+      else {
+
+        updateDiv.textContent = $translate.instant('translationRowsValid', {count: validRows.size});
+        csvInfo.append(updateDiv);
+        invalidDiv.textContent = $translate.instant('translationRowsInvalid', {count: invalidRows.size});
+        csvInfo.append(invalidDiv);
+        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("csvOk").style.display= 'none';
+        document.getElementById("csvWarning").style.display= 'block';
+        document.getElementById("csvError").style.display= 'none';
+        invalidRows.forEach((value, key) => {
+          let invalidRow = document.createElement('div');
+          invalidRow.textContent = $translate.instant('row') + ": " + key + ", "  + (value.length > 50 ? value.substring(0, 50) + "..." : value);
+          csvInfo.appendChild(invalidRow);
+        });
+
+
+      }
+    };
+  }
+
+  function validNodesToUpdate(headerRow, nodesToUpdate) {
+
+    var columnAndValues = new Map();
+
+    nodesToUpdate.forEach(function(value, key) {
+
+      const valuesArray = value.split(";");
+      var id = "";
+      var graphId = "";
+
+      headerRow.forEach(function(value, key) {
+        
+        var cleanValue = value.replace(/[^\x00-\x7F]/, "");
+        columnAndValues.set(cleanValue, valuesArray[key]);
+
+        if(cleanValue === 'id') {
+          id = valuesArray[key].replace(/[^\x00-\x7F]/, "");
+        }
+
+        if(cleanValue === 'type.graph.id') {
+          graphId = valuesArray[key].replace(/[^\x00-\x7F]/, "");
+        }
+      });
+
+      // Don't waste time if id or graph id is missing
+      if(id.length > 0 && graphId.length > 0){
+        updateSingleNode(id, graphId, columnAndValues);
+      } 
+    })
+
+    $('#translationsCsvModal').modal('hide');
+    $('#successModal').modal('show');
+  }
+
+
+ 
+  function updateSingleNode(id, graphId, columnAndValues) {
+
+    var nodeToUpdate = Node.get({
+      graphId: graphId,
+      typeId: 'Concept',
+      id: id
+    });
+
+    nodeToUpdate.$promise.then(function(node) {
+
+    columnAndValues.forEach(function(value, key) {
+
+      if(value.length > 0) {
+      
+      if(key.startsWith('properties.')) {
+        const field = key.split('.');
+
+        if(node.properties[field[1]]){
+
+          if (field[2] != 'fi') { // Don't touch finnish language
+            var filteredLanguages = node.properties[field[1]].filter(text => text.lang != field[2]);
+            node.properties[field[1]] = filteredLanguages;
+            const rows = value.split('|').filter(row => row !== '');
+
+            rows.forEach(row => {
+              var addLanguage = {lang: field[2], value: row, regex: '(?s)^.*$'};
+              if(row.length > 0) {
+                node.properties[field[1]].push(addLanguage);
+              }
+            });
+
+          }
+        } else {
+
+          if(value.length > 0) { // Not a previous translations so create it
+
+            const rows = value.split('|').filter(row => row !== '');
+            node.properties[field[1]] = [];
+
+            rows.forEach(row => {
+              var addLanguage = {lang: field[2], value: row, regex: '(?s)^.*$'};
+              node.properties[field[1]].push(addLanguage);
+            });
+
+          }
+        }
+      }
+    }
+    });
+
+      Node.query({
+        graphId: graphId,
+        typeId: 'Status',
+        code: 'translate'
+      }).$promise.then(function(statusNode) {
+  
+        const statusId = statusNode.filter(node => node.code=='translate');
+        const statusWithOutTranslate = node.references.status.filter(status => status.id != statusId[0].id);
+        const canBeTranslated = node.references.status.filter(status => status.id == statusId[0].id).length > 0;
+
+        // Update only if status has been marked for translated
+        if (canBeTranslated){
+          node.references.status = statusWithOutTranslate
+          node.$update({
+            graphId: graphId,
+            typeId: 'Concept',
+            id: id
+          }, function(error) {
+            $scope.error = error;
+          });
+        } 
+
+        return statusId;
+      });
+      
+    });
+  }
+
+  $scope.uploadCsvFile = function() {
+ 
+    const fileInput = document.getElementById('file-upload');
+    if (fileInput.files.length == 0) {
+      return;
+    }
+
+    $translate.use();
+    var csvInfo = document.getElementById('csvInfo');
+    csvInfo.innerHTML = "";
+
+    this.className = '';
+    var template = "";
+    var csvData = null;    
+    var file = fileInput.files[0];
+
+    var reader = new FileReader();
+    reader.readAsText(file);
+    reader.onloadend = () => {
+
+      template = reader.result;
+      csvData = template;
+
+      var text = template;
+      var lines = text.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
+
+      const headerRow = [];
+
+      // Download file as UTF-8, so it will work in every OS
+      // So we need to add UTF-8 marks (\ufeff) to the file beginning  
+
+      var i = 0; 
+
+      const validRows = new Map();
+      const invalidRows = new Map();
+
+      for(i = 0; i < lines.length; i++) {
+
+        if (headerRow.length == 0 && lines[i].endsWith('type.graph.id')) {
+          const myArray = lines[i].split(";");
+
+          myArray.forEach(field => {
+              if (headerRow.length == 0) {
+                headerRow.push('\ufeff' + field);
+              } else {
+                headerRow.push(field);
+              }
+            });
+
+        } else
+         if (headerRow.length > 0) {
+          const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}[\r\n]*$/;
+
+          var id = lines[i].substring(0, lines[i].indexOf(";"));
+          var graphId = lines[i].substring(lines[i].lastIndexOf(";") + 1);
+
+          graphId = graphId.replace(/[^\x00-\x7F]/, "");
+
+          if(regexExp.test(id) == false || regexExp.test(graphId) == false) {
+            invalidRows.set((i + 1), $translate.instant('translationIdOrGraphIdMissing'));
+          } else {
+            validRows.set(id, lines[i]);
+          }
+        }
+
+      }
+
+      if (headerRow.length > 0 && validRows.size > 0){
+        validNodesToUpdate(headerRow, validRows);
+      } else {
+        var invalidDiv = document.createElement('div');
+        invalidDiv.textContent = "Tiedostossa ei ole yhtään arvoriviä tai ne ovat virheellisiä.";
+        csvInfo.append(invalidDiv);
+        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("csvOk").style.display= 'none';
+        document.getElementById("csvWarning").style.display= 'none';
+        document.getElementById("csvError").style.display= 'block';
+      }
+
+    };
+
+  };
+
   $scope.newNode = function() {
     NodeList.save({
       graph: $scope.graph,
@@ -488,6 +831,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       typeId: $routeParams.typeId,
       id: $routeParams.id
     }, function(node) {
+
       $location.path('/graphs/' + node.type.graph.id + '/types/' + node.type.id + '/nodes/' + node.id);
     }, function(error) {
       $scope.error = error;
