@@ -78,17 +78,17 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   };
 
   $scope.searchNodes = function(query) {
-    var tokens = (query.match(/\S+/g) || []);
-    var where = [];
+    const tokens = (query.match(/\S+/g) || []);
+    const where = [];
 
     $scope.types.forEach(function(type) {
-      var whereType = [];
-      
+      const whereType = [];
+
       whereType.push("graph.id:" + type.graph.id);
       whereType.push("type.id:" + type.id);
 
       if (tokens.length > 0) {
-        var whereTypeProperties = [];
+        const whereTypeProperties = [];
 
         whereTypeProperties.push("p.prefLabel." + $scope.lang + ":\"" + query + "\"^4");
 
@@ -127,7 +127,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         q: query
       }).replace();
     });
-    
+
     $scope.whereStr = encodeURI("where=" + where.join(" OR "));
   };
 
@@ -146,20 +146,28 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
 .controller('NodeListByTypeCtrl', function($scope, $route, $location, $routeParams, $translate, Graph, Type, TypeNodeTreeList, TypeNodeCount, TypeList, NodeList) {
   $scope.lang = $translate.use();
-
   $scope.query = ($location.search()).q || "";
   $scope.criteria = ($location.search()).c || "";
   $scope.criteriaModel = [];
-
   $scope.max = 25;
+  $scope.selectStr = "";
+  $scope.boxes = [
+    { type: "", attribute: "id" },
+    { type: "p", attribute: "prefLabel" },
+    { type: "p", attribute: "altLabel" },
+    { type: "p", attribute: "avoidableLabel" },
+    { type: "p", attribute: "deprecatedLabel" },
+    { type: "p", attribute: "definition" },
+    { type: "p", attribute: "note" }
+  ]
 
   function parseCriteriaModel(type, criteria) {
     if (criteria.length === 0) {
       return [];
     }
 
-    var criteriaModel = [];
-    var attrIndex = type.referenceAttributes.reduce(function(map, attr) {
+    const criteriaModel = [];
+    let attrIndex = type.referenceAttributes.reduce(function (map, attr) {
       map["r." + attr.id + ".id"] = attr;
       return map;
     }, {});
@@ -168,35 +176,34 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       return map;
     }, attrIndex);
 
-    var clauses = criteria.split(" AND ");
+    const clauses = criteria.split(" AND ");
 
-    for (var i = 0; i < clauses.length; i++) {
-      var innerClauses = clauses[i]
-        .substring(1, clauses[i].length - 1)
-        .split(" OR ");
+    for (const element of clauses) {
+      const innerClauses = element
+          .substring(1, element.length - 1)
+          .split(" OR ");
 
-      var filter = {
+      const filter = {
         attribute: null,
         values: [],
         type: null
       };
 
-      for (var j = 0; j < innerClauses.length; j++) {
+      for (const innerClause of innerClauses) {
 
-        var attrAndValue = innerClauses[j].split(":");
+        const attrAndValue = innerClause.split(":");
+        const attr = attrIndex[attrAndValue[0]];
+        const value = attrAndValue[1];
 
         filter.type = attrAndValue[0].split('.')[0];
-
-        var attr = attrIndex[attrAndValue[0]];
-        var value = attrAndValue[1];
-
         filter.attribute = attr;
-        if (filter.type == 'r') {
+
+        if (filter.type === 'r') {
           filter.values.push({
             type: attr.range,
             id: value
           });
-        } else if (filter.type =='p') {
+        } else if (filter.type ==='p') {
           //strip quotation marks
           filter.values.push({
             id: value.substring(1,value.length - 1),
@@ -212,17 +219,17 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   }
 
   function criteriaModelToString(criteriaModel) {
-    var clauses = [];
-    for (var i = 0; i < criteriaModel.length; i++) {
-      var attribute = criteriaModel[i].attribute;
-      var values = criteriaModel[i].values;
-      var type = criteriaModel[i].type;
+    const clauses = [];
+    for (let i = 0; i < criteriaModel.length; i++) {
+      const attribute = criteriaModel[i].attribute;
+      const values = criteriaModel[i].values;
+      const type = criteriaModel[i].type;
 
-      var innerClauses = [];
-      for (var j = 0; j < values.length; j++) {
-        if (type == "r") {
+      const innerClauses = [];
+      for (let j = 0; j < values.length; j++) {
+        if (type === "r") {
           innerClauses.push(type +"." + attribute.id + ".id:" + values[j].id);
-        } else if (type == "p"){
+        } else if (type === "p") {
           innerClauses.push(type +"." + attribute.id + ":\"" + values[j].id +"\"");
         }
       }
@@ -259,6 +266,35 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     graphId: $routeParams.graphId
   });
 
+  $scope.selectAllAttributes = function() {
+    const inputSelects = [];
+    $scope.selectStr = "";
+    if (document.getElementById("all_fields").checked === true) {
+      for (let element of document.getElementsByClassName("input-select")) {
+        element.checked = true;
+        inputSelects.push(element.value !== "id" ? "p." + element.value : element.value);
+      }
+      $scope.selectStr = inputSelects.join(",").toString();
+    } else {
+      for (let element of document.getElementsByClassName("input-select")) {
+        element.checked = false;
+      }
+    }
+    document.getElementById("all_fields").checked = inputSelects.length === 7;
+  }
+
+  $scope.setSelectAttributes = function() {
+    const inputSelects = [];
+    $scope.selectStr = "";
+    for (let element of document.getElementsByClassName("input-select")) {
+      if (element.checked) {
+        inputSelects.push(element.value !== "id" ? "p." + element.value : element.value);
+      }
+    }
+    $scope.selectStr = inputSelects.join(",").toString();
+    document.getElementById("all_fields").checked = inputSelects.length === 7;
+  }
+
   $scope.loadMoreResults = function() {
     $scope.max += 50;
     $scope.searchNodes(($location.search()).q || "", ($location.search()).c || "");
@@ -270,11 +306,11 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   };
 
   $scope.searchNodes = function(query, criteria) {
-    var where = "";
+    let where = "";
 
-    var tokens = (query.match(/\S+/g) || []);
+    const tokens = (query.match(/\S+/g) || []);
     if (tokens.length > 0) {
-      var whereProperties = [];
+      const whereProperties = [];
 
       whereProperties.push("p.prefLabel." + $scope.lang + ":\"" + query + "\"^4");
 
@@ -321,7 +357,6 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         c: criteria
       }).replace();
     });
-    
     $scope.whereStr = encodeURI("where=" + where);
   };
 
@@ -342,8 +377,8 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   };
 
   $scope.removeCriteria = function(criteria) {
-    var i = $scope.criteriaModel.indexOf(criteria);
-    $scope.criteriaModel.splice(i, 1);
+    const index = $scope.criteriaModel.indexOf(criteria);
+    $scope.criteriaModel.splice(index, 1);
   };
 
   $scope.newNode = function() {
@@ -363,9 +398,9 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
   $scope.lang = $translate.use();
 
-  var select = $routeParams.select || 'id,code,uri,type,properties.*,references.*';
-  var where = $routeParams.where || '';
-  var sort = $routeParams.sort || ('properties.prefLabel.' + $scope.lang + '.sortable');
+  const select = $routeParams.select || 'id,code,uri,type,properties.*,references.*';
+  const where = $routeParams.where || '';
+  const sort = $routeParams.sort || ('properties.prefLabel.' + $scope.lang + '.sortable');
 
   $scope.graph = Graph.get({
     graphId: $routeParams.graphId
@@ -376,7 +411,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   TypeList.query({
     graphId: $routeParams.graphId
   }, function(types) {
-    for (var i = 0; i < types.length; i++) {
+    for (let i = 0; i < types.length; i++) {
       $scope.typesById[types[i].id] = types[i];
     }
   });
@@ -436,7 +471,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   $scope.graph = Graph.get({
     graphId: $routeParams.graphId
   });
-  
+
 })
 
 .controller('NodeRevisionCtrl', function($scope, $routeParams, $location, $translate, $q, NodeRevision, Type, Graph) {
@@ -523,7 +558,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         return defaultValue;
       }
 
-      var lang = $translate.use();
+      let lang = $translate.use();
 
       $rootScope.$on('$translateChangeEnd', function() {
         lang = $translate.use();
@@ -532,9 +567,9 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
       $q.all([scope.node.$promise, scope.type.$promise]).then(function() {
 
-        var treeAttributeId = propVal(scope.type.properties, "configTreeAttributeId", "broader");
-        var treeInverted = propVal(scope.type.properties, "configTreeInverted", "true");
-        var treeSort = propVal(scope.type.properties, "configTreeSort", "true");
+        const treeAttributeId = propVal(scope.type.properties, "configTreeAttributeId", "broader");
+        const treeInverted = propVal(scope.type.properties, "configTreeInverted", "true");
+        const treeSort = propVal(scope.type.properties, "configTreeSort", "true");
 
         elem.jstree({
           core: {
@@ -543,9 +578,9 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
             },
             data: {
               url: function(node) {
-                var nodeGraphId;
-                var nodeTypeId;
-                var nodeId;
+                let nodeGraphId;
+                let nodeTypeId;
+                let nodeId;
 
                 if (node.id === '#') {
                   nodeGraphId = scope.node.type.graph.id;
@@ -573,11 +608,11 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
             }
           },
           sort: function(a, b) {
-            var aNode = this.get_node(a).original;
-            var bNode = this.get_node(b).original;
+            const aNode = this.get_node(a).original;
+            const bNode = this.get_node(b).original;
             return aNode.text.localeCompare(bNode.text, lang);
           },
-          plugins: [treeSort == "true" ? "sort" : ""]
+          plugins: [treeSort === "true" ? "sort" : ""]
         });
       });
 

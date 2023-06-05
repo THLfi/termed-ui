@@ -103,7 +103,13 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     run: 'suorita',
     lastModifiedDate: 'muokattu',
     warnSlowAllNodesView: 'Huom. näkymän avautuminen voi aineiston koosta riippuen kestää useita minuutteja.',
-    warnIdChange: 'Varoitus: ID:n muuttaminen tuhoaa siihen viittaavat tiedot (esim. luokan ilmentymät tai attribuuttien arvot). On suositeltavaa ettei tunnuksia muuteta aineiston tietomallin määrittelyvaiheen jälkeen.'
+    warnIdChange: 'Varoitus: ID:n muuttaminen tuhoaa siihen viittaavat tiedot (esim. luokan ilmentymät tai attribuuttien arvot). On suositeltavaa ettei tunnuksia muuteta aineiston tietomallin määrittelyvaiheen jälkeen.',
+    prefLabel: "termi",
+    altLabel: "synonyymi",
+    avoidableLabel: "vältettävä termi",
+    deprecatedLabel: "hylättävä termi",
+    definition: "määritelmä",
+    note: "kommentti"
   })
 
   .translations('en', {
@@ -200,7 +206,13 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     run: 'run',
     lastModifiedDate: 'date modified',
     warnSlowAllNodesView: 'Note that opening all nodes view might take several minutes.',
-    warnIdChange: 'Warning: Changing ID deletes all data referring to the ID (e.g. instances of a type or values of an attribute). It\'s recommended that ID values are not changed after initial graph definition.'
+    warnIdChange: 'Warning: Changing ID deletes all data referring to the ID (e.g. instances of a type or values of an attribute). It\'s recommended that ID values are not changed after initial graph definition.',
+    prefLabel: "prefLabel",
+    altLabel: "altLabel",
+    avoidableLabel: "avoidableLabel",
+    deprecatedLabel: "deprecatedLabel",
+    definition: "definition",
+    note: "note"
   });
 
 });

@@ -30,8 +30,10 @@ angular.module('termed.graphs', ['ngRoute', 'termed.rest', 'termed.graphs.proper
   };
 
   $scope.searchNodes = function(query) {
-    var parsedQuery = (query.match(/\S+/g) || []).map(
-      function(token) { return 'properties.prefLabel.' + $scope.lang + ':' + token + '*'; });
+    const parsedQuery = (query.match(/\S+/g) || []).map(
+        function (token) {
+          return 'properties.prefLabel.' + $scope.lang + ':' + token + '*';
+        });
 
     NodeTreeList.query({
       select: 'id,type,properties.*',
@@ -42,7 +44,7 @@ angular.module('termed.graphs', ['ngRoute', 'termed.rest', 'termed.graphs.proper
     });
   };
 
-  var graphIndex = {};
+  const graphIndex = {};
 
   $scope.graphs = GraphList.query({
     orderBy: 'prefLabel.fi'
@@ -161,7 +163,7 @@ angular.module('termed.graphs', ['ngRoute', 'termed.rest', 'termed.graphs.proper
   };
 
   $scope.removeType = function(type) {
-    var i = $scope.types.indexOf(type);
+    const i = $scope.types.indexOf(type);
     $scope.types.splice(i, 1);
   };
 
@@ -205,7 +207,7 @@ angular.module('termed.graphs', ['ngRoute', 'termed.rest', 'termed.graphs.proper
   };
 
   $scope.removeTextAttribute = function(type, textAttribute) {
-    var i = type.textAttributes.indexOf(textAttribute);
+    const i = type.textAttributes.indexOf(textAttribute);
     type.textAttributes.splice(i, 1);
   };
 
@@ -232,7 +234,7 @@ angular.module('termed.graphs', ['ngRoute', 'termed.rest', 'termed.graphs.proper
   };
 
   $scope.removeReferenceAttribute = function(type, referenceAttribute) {
-    var i = type.referenceAttributes.indexOf(referenceAttribute);
+    const i = type.referenceAttributes.indexOf(referenceAttribute);
     type.referenceAttributes.splice(i, 1);
   };
 

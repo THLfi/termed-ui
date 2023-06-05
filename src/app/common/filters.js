@@ -20,16 +20,16 @@ angular.module('termed.filters', ['pascalprecht.translate'])
       return defaultValue || '-';
     }
 
-    var lang = $translate.use();
+    const lang = $translate.use();
 
-    for (var i = 0; i < propertyValues.length; i++) {
-      if (propertyValues[i].lang == lang && propertyValues[i].value.length > 0) {
+    for (let i = 0; i < propertyValues.length; i++) {
+      if (propertyValues[i].lang === lang && propertyValues[i].value.length > 0) {
         return propertyValues[i].value;
       }
     }
 
     if (propertyValues[0].value.length > 0) {
-      var langInfo = propertyValues[0].lang ? " (" + propertyValues[0].lang + ")" : "";
+      const langInfo = propertyValues[0].lang ? " (" + propertyValues[0].lang + ")" : "";
       return propertyValues[0].value + langInfo;
     }
 
@@ -43,32 +43,32 @@ angular.module('termed.filters', ['pascalprecht.translate'])
       return defaultValue || '-';
     }
 
-    var currentLang = $translate.use();
+    const currentLang = $translate.use();
 
-    var preferredValues = properties[preferredProperty];
+    const preferredValues = properties[preferredProperty];
 
     if (preferredValues && preferredValues.length > 0) {
-      for (var i = 0; i < preferredValues.length; i++) {
-        if (preferredValues[i].lang == currentLang && preferredValues[i].value.length > 0) {
+      for (let i = 0; i < preferredValues.length; i++) {
+        if (preferredValues[i].lang === currentLang && preferredValues[i].value.length > 0) {
           return preferredValues[i].value;
         }
       }
       if (preferredValues[0].value.length > 0) {
-        var langInfo = preferredValues[0].lang ? " (" + preferredValues[0].lang + ")" : "";
+        const langInfo = preferredValues[0].lang ? " (" + preferredValues[0].lang + ")" : "";
         return preferredValues[0].value + langInfo;
       }
     }
 
-    var results = [];
+    const results = [];
 
-    for (var property in properties) {
-      var values = properties[property];
+    for (const property in properties) {
+      const values = properties[property];
 
-      for (var j = 0; j < values.length; j++) {
-        var lang = values[j].lang;
-        var value = values[j].value.substring(0, 60);
+      for (let j = 0; j < values.length; j++) {
+        const lang = values[j].lang;
+        const value = values[j].value.substring(0, 60);
 
-        if ((lang == currentLang || lang === '') && value.length > 0) {
+        if ((lang === currentLang || lang === '') && value.length > 0) {
           results.push(property + ": " + value);
         } else {
           results.push(property + ": " + value + " (" + lang + ")");
