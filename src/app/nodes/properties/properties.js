@@ -73,6 +73,12 @@
             values.push({ lang:'', value:'', regex: textAttrRegex });
           }
         }
+
+        $scope.removeRow = function(row) {
+          row.langValue.lang = '';
+          row.langValue.value = '';
+        }
+        
       }
     };
   });
