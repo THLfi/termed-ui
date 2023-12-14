@@ -134,7 +134,13 @@
           },
           formatSelection: function(result) {
             return $sanitize(getLocalizedPrefLabel(result.properties));
-          }
+          },
+          sortResults: function(results) {
+            results.sort(
+              (a, b) => getLocalizedPrefLabel(a.properties).localeCompare(getLocalizedPrefLabel(b.properties))
+            );
+            return results;
+          }          
         });
 
         elem.select2("container").find("ul.select2-choices").sortable({
