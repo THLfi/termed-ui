@@ -18,10 +18,10 @@ angular.module('termed.graphs.properties', ['pascalprecht.translate', 'termed.re
           properties[propertyId] = [];
         }
 
-        var values = properties[propertyId];
+        const values = properties[propertyId];
 
         // remove all empty values (not including the last one)
-        for (var i = 0; i < values.length - 1; i++) {
+        for (let i = 0; i < values.length - 1; i++) {
           if (values[i].lang === "" && values[i].value === "") {
             values.splice(i, 1);
             i--;

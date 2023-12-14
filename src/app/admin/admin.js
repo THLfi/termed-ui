@@ -123,7 +123,7 @@ angular.module('termed.admin', ['ngRoute'])
 
   $scope.graphsById = {};
   $scope.graphs = GraphList.query({}, function(graphs) {
-    for (var i = 0; i < graphs.length; i++) {
+    for (let i = 0; i < graphs.length; i++) {
       $scope.graphsById[graphs[i].id] = graphs[i];
     }
   });
@@ -144,7 +144,7 @@ angular.module('termed.admin', ['ngRoute'])
   };
 
   $scope.removeGraphRole = function(user, graphRole) {
-    var i = user.graphRoles.indexOf(graphRole);
+    const i = user.graphRoles.indexOf(graphRole);
     user.graphRoles.splice(i, 1);
   };
 
