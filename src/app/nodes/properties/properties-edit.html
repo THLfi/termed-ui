@@ -4,16 +4,30 @@
   <table>
     <tbody thl-sortable elements="node.properties[textAttr.id]">
     <tr ng-repeat="langValue in node.properties[textAttr.id]">
+
       <td width="6%">
-        <input type="text" class="form-control lang-input" ng-model="langValue.lang">
+        <select class="form-control lang-input" ng-model="langValue.lang" >
+          <option></option>
+          <option ng-repeat="type in ['fi', 'sv', 'en']" value="{{type}}" ng-selected="{{langValue.lang == type}} ">
+            {{type}}
+          </option>
+        </select>
       </td>
+
       <td width="91%">
         <textarea class="form-control" rows="1" ng-model="langValue.value"
-                  style="border-top-left-radius:0;border-bottom-left-radius:0;"></textarea>
+                  style="border-top-left-radius:0;border-bottom-left-radius:0;">
+        </textarea>
+      </td>
+
+      <td width="3%" class="handle text-center">
+        <span class="label label-default editDragField">
+          <span class="glyphicon glyphicon-sort"></span>
+        </span>
       </td>
       <td width="3%" class="handle text-center">
-        <span class="label label-default">
-          <span class="glyphicon glyphicon-sort"></span>
+        <span class="label label-default removeField" ng-click="removeRow(this)">
+          <span class="glyphicon glyphicon-remove"></span>
         </span>
       </td>
     </tr>

@@ -23,7 +23,7 @@
       <tbody>
       <tr ng-repeat="graph in graphs | filter:graphQuery | orderBy:localizedPrefLabel">
         <td>
-          <a ng-href="#/graphs/{{graph.id}}/nodes">
+          <a ng-href="#/graphs/{{graph.id}}/{{graph.properties.configGraphHomeLayout[0].value || 'nodes'}}">
             {{graph.properties.prefLabel | localizeValue}}
           </a>
         </td>

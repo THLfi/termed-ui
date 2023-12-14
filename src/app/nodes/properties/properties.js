@@ -58,10 +58,10 @@
             nodeProperties[textAttrId] = [];
           }
 
-          var values = nodeProperties[textAttrId];
+          const values = nodeProperties[textAttrId];
 
           // remove all empty values (not including the last one)
-          for (var i = 0; i < values.length - 1; i++) {
+          for (let i = 0; i < values.length - 1; i++) {
             if (values[i].lang === "" && values[i].value === "") {
               values.splice(i, 1);
               i--;
@@ -73,6 +73,12 @@
             values.push({ lang:'', value:'', regex: textAttrRegex });
           }
         }
+
+        $scope.removeRow = function(row) {
+          row.langValue.lang = '';
+          row.langValue.value = '';
+        }
+        
       }
     };
   });

@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">{{'termed' | translate}}</a></li>
-    <li><a ng-href="#/graphs/{{node.type.graph.id}}/nodes">
+    <li><a ng-href="#/graphs/{{node.type.graph.id}}/{{graph.properties.configGraphHomeLayout[0].value || 'nodes'}}">
         {{graph.properties.prefLabel | localizeValue}}
     </a></li>
     <li><a ng-href="#/graphs/{{node.type.graph.id}}/types/{{node.type.id}}/nodes">
@@ -43,7 +43,6 @@
             <small>{{node.code}}</small>
             <small ng-if="!node.code && !node.uri">-</small>
         </div>
-
 
         <thl-node-properties node="node"></thl-node-properties>
 

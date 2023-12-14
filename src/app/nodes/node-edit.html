@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">{{'termed' | translate}}</a></li>
-    <li><a ng-href="#/graphs/{{node.type.graph.id}}/nodes">
+    <li><a ng-href="#/graphs/{{node.type.graph.id}}/{{graph.properties.configGraphHomeLayout[0].value || 'nodes'}}">
         {{graph.properties.prefLabel | localizeValue}}
     </a></li>
     <li><a ng-href="#/graphs/{{node.type.graph.id}}/types/{{node.type.id}}/nodes">
@@ -63,6 +63,7 @@
         <label>URI</label>
 
         <input type="text" class="form-control" ng-model="node.uri">
+        
     </div>
 
     <div class="form-group">

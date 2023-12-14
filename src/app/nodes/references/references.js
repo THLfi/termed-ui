@@ -19,7 +19,7 @@
             typeId: node.type.id
           }, function(refAttrs) {
             $scope.refAttrs = refAttrs;
-            for (var i = 0; i < refAttrs.length; i++) {
+            for (let i = 0; i < refAttrs.length; i++) {
               node.references[refAttrs[i].id] = NodeReferenceList.query({
                 graphId: node.type.graph.id,
                 typeId: node.type.id,
@@ -50,11 +50,11 @@
             typeId: node.type.id
           }, function(refAttrs) {
             $scope.refAttrs = refAttrs;
-            for (var i = 0; i < refAttrs.length; i++) {
-              var attrId = refAttrs[i].id;
-              var refs = node.references[attrId] || [];
-              for (var j = 0; j < refs.length; j++) {
-                var ref = refs[j];
+            for (let i = 0; i < refAttrs.length; i++) {
+              const attrId = refAttrs[i].id;
+              const refs = node.references[attrId] || [];
+              for (let j = 0; j < refs.length; j++) {
+                const ref = refs[j];
                 node.references[attrId][j] = NodeRevision.get({
                   graphId: ref.type.graph.id,
                   typeId: ref.type.id,
@@ -98,11 +98,11 @@
       link: function(scope, elem, attrs) {
 
         function getLocalizedPrefLabel(properties) {
-          var lang = $translate.use();
+          const lang = $translate.use();
 
           if (properties.prefLabel && properties.prefLabel.length > 0) {
-            for (var i = 0; i < properties.prefLabel.length; i++) {
-              if (properties.prefLabel[i].lang == lang) {
+            for (let i = 0; i < properties.prefLabel.length; i++) {
+              if (properties.prefLabel[i].lang === lang) {
                 return properties.prefLabel[i].value;
               }
             }
@@ -122,7 +122,17 @@
               query: query.term
             }, function(results) {
               query.callback({
-                results: results
+                results: results.sort((a, b) => {
+                  const nameA = getLocalizedPrefLabel(a.properties).toUpperCase(); // ignore upper and lowercase
+                  const nameB = getLocalizedPrefLabel(b.properties).toUpperCase(); // ignore upper and lowercase
+                  if (nameA < nameB) {
+                    return -1;
+                  }
+                  if (nameA > nameB) {
+                    return 1;
+                  }
+                  return 0;
+                })
               });
             });
           },
@@ -134,7 +144,13 @@
           },
           formatSelection: function(result) {
             return $sanitize(getLocalizedPrefLabel(result.properties));
-          }
+          },
+          sortResults: function(results) {
+            results.sort(
+              (a, b) => getLocalizedPrefLabel(a.properties).localeCompare(getLocalizedPrefLabel(b.properties))
+            );
+            return results;
+          }          
         });
 
         elem.select2("container").find("ul.select2-choices").sortable({
@@ -169,20 +185,20 @@
           }
 
           if (attrs.multiple) {
-            var promiseGet = function(idObject) {
+            const promiseGet = function (idObject) {
               var d = $q.defer();
               Node.get({
                 graphId: scope.refAttr.range.graph.id,
                 typeId: scope.refAttr.range.id,
                 id: idObject.id
-              }, function(result) {
+              }, function (result) {
                 d.resolve(result);
               });
               return d.promise;
             };
 
-            var promises = [];
-            for (var i = 0; i < ngModel.length; i++) {
+            const promises = [];
+            for (let i = 0; i < ngModel.length; i++) {
               promises.push(promiseGet(ngModel[i]));
             }
 
@@ -213,11 +229,11 @@
       link: function(scope, elem, attrs) {
 
         function getLocalizedProperty(property) {
-          var lang = $translate.use();
+          const lang = $translate.use();
 
           if (property && property.length > 0) {
-            for (var i = 0; i < property.length; i++) {
-              if (property[i].lang == lang) {
+            for (let i = 0; i < property.length; i++) {
+              if (property[i].lang === lang) {
                 return property[i].value;
               }
             }
@@ -227,34 +243,53 @@
           return "-";
         }
 
+        function queryNodeAttributeValues(terms, oldResults, callback) {
+          var where = terms.map(function(t) { return "p." + scope.textAttr.id + ":" + t + "*"; }).join(" AND ");
+          var whereNot = oldResults.map(function(t) { return "(NOT p." + scope.textAttr.id + ":\"" + t + "\")"; }).join(" AND ");
+          where = (where != "" && whereNot != "") ? where + " AND " + whereNot : where + whereNot;
+          TypeNodeTreeList.query({
+            graphId: scope.textAttr.domain.graph.id,
+            typeId: scope.textAttr.domain.id,
+            select: "properties." + scope.textAttr.id,
+            where: where
+          }, function(results) {
+            results = results
+              // filter nodes with missing property
+              .filter(function(result) {return result.properties[scope.textAttr.id] !== undefined;})
+              // map to attribute value
+              .map(function(result) { return getLocalizedProperty(result.properties[scope.textAttr.id]); });
+            if (results.length == 0) {
+              callback(oldResults);
+            } else {
+              // concatenate to previous results
+              results = oldResults.concat(results)
+                // filter unique properties
+                .filter(function(value, index, self){
+                  return self.indexOf(value) === index;
+                });
+              if (results.length > 25) {
+                callback(results);
+              } else {
+                queryNodeAttributeValues(terms, results, callback);
+              }
+            }
+          });
+        }
+
         elem.select2({
           allowClear: true,
           multiple: !!attrs.multiple,
           query: function(query) {
-            var tokens = (query.term.match(/\S+/g) || []);
-            var where = tokens.map(function(t) { return "p." + scope.textAttr.id + ":" + t + "*"; }).join(" AND ");
-            TypeNodeTreeList.query({
-              graphId: scope.textAttr.domain.graph.id,
-              typeId: scope.textAttr.domain.id,
-              select: "*",
-              where: where
-            }, function(results) {
-              results = results
-                // map to property
-                .map(function(result) {
-                  return getLocalizedProperty(result.properties[scope.textAttr.id]);
-                })
-                // filter unique properties
-                .filter(function(value, index, self){
-                  return self.indexOf(value) === index;
-                })
-                // map to select2 data format
-                .map(function(result){
-                  return {
-                    id: result,
-                    text: result
-                  };
-                });
+            var terms = (query.term.match(/\S+/g) || []);
+            var results = [];
+            queryNodeAttributeValues(terms, results, function(results) {
+              // map to select2 data format
+              results = results.map(function(result){
+                return {
+                  id: result,
+                  text: result
+                };
+              });
               query.callback({
                 results: results
               });

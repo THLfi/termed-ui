@@ -4,13 +4,14 @@
 
     <dl class="text-muted">
         <dt>{{'referrers' | translate | capitalize}}</dt>
-        <dd>
-            <div ng-repeat="(k, rs) in node.referrers">
+        <dd ng-repeat="(k, rs) in node.referrers">
+            <div>
                 <div ng-repeat="r in rs">
                     <a ng-href="#/graphs/{{r.type.graph.id}}/types/{{r.type.id}}/nodes/{{r.id}}" title="{{r.uri}} {{r.code}}">
                         &larr;
                         {{r.properties.prefLabel | localizeValue:('unnamed' | translate)}}
                     </a>
+                    | {{typesById[r.type.id].properties.prefLabel | localizeValue}} ({{referenceAttributesByTypeAndId[r.type.id][k].properties.prefLabel | localizeValue}})
                 </div>
             </div>
         </dd>

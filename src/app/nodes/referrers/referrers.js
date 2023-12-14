@@ -3,7 +3,7 @@
 
   angular.module('termed.nodes.referrers', ['pascalprecht.translate', 'termed.rest'])
 
-  .directive('thlNodeReferrers', function($translate, NodeReferrerList) {
+  .directive('thlNodeReferrers', function($translate, NodeReferrerList, TypeList) {
     return {
       restrict: 'E',
       scope: {
@@ -14,7 +14,23 @@
         $scope.lang = $translate.use();
 
         $scope.node.$promise.then(function(node) {
-          for ( var attrId in node.referrers) {
+
+          $scope.typesById = {};
+          $scope.referenceAttributesByTypeAndId = {};
+
+          $scope.types = TypeList.query({
+            graphId: node.type.graph.id
+          }, function(types) {
+            types.forEach(function(c) {
+              $scope.typesById[c.id] = c;
+              $scope.referenceAttributesByTypeAndId[c.id] = {};
+              c.referenceAttributes.forEach(function(r) {
+                $scope.referenceAttributesByTypeAndId[c.id][r.id]=r;
+              });
+            });
+          });
+
+          for (const attrId in node.referrers) {
             node.referrers[attrId] = NodeReferrerList.query({
               graphId: node.type.graph.id,
               typeId: node.type.id,
@@ -25,7 +41,7 @@
         });
 
         $scope.isEmpty = function(obj) {
-          for ( var i in obj) {
+          for (const i in obj) {
             if (obj.hasOwnProperty(i)) {
               return false;
             }

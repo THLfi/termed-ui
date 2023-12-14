@@ -72,6 +72,17 @@ angular.module('termed.rest', ['ngResource'])
   });
 })
 
+.factory('TypeNodeImportCsv', function($resource) {
+  return $resource('api/graphs/:graphId/types/:typeId/nodes:params', {graphId: '@graphId', typeId: '@typeId', delimiter: '@delimiter', lineBrak: '@linebreak', quoteAll : '@quoteAll', charset : '@charset'}, {
+    'save': {
+      method : 'POST',
+      headers: {'Content-Type': 'text/csv'},
+      transformRequest: [],
+      transformResponse: []
+    }
+  });
+})
+
 .factory('Node', function($resource) {
   return $resource('api/graphs/:graphId/types/:typeId/nodes/:id', null, { 'update': { method : 'PUT' }});
 })

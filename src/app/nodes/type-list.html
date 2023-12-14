@@ -1,0 +1,123 @@
+<ol class="breadcrumb">
+  <li><a ng-href="#/">{{'termed' | translate}}</a></li>
+  <li class="active">
+    {{graph.properties.prefLabel | localizeValue}}
+  </li>
+</ol>
+
+<div class="pull-right">
+  <a class="btn btn-link btn-xs btn-default" ng-href="#/graphs/{{graph.id}}/nodes-all">
+    <span class="glyphicon glyphicon-list"></span>
+    {{'allNodes' | translate | capitalize}}
+  </a>
+
+  <div class="btn-group">
+    <button class="btn btn-link btn-xs btn-default dropdown-toggle" type="button" id="export-menu"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+      <span class="glyphicon glyphicon-download-alt"></span>
+      {{'download' | translate | capitalize}} {{'all' | translate }}
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="export-menu">
+      <li><a ng-href="api/graphs/{{graph.id}}/nodes?max=-1" type="application/json">JSON</a></li>
+      <li><a ng-href="api/graphs/{{graph.id}}/nodes.ttl?download=true" type="text/turtle">RDF</a></li>
+      <li><a ng-href="api/graphs/{{graph.id}}/nodes.csv" type="text/csv">CSV (UTF-8)</a></li>
+      <li><a ng-href="api/graphs/{{graph.id}}/nodes.csv?delimiter=SEMICOLON&lineBreak=CRLF&quoteAll=true&charset=ISO-8859-1" type="text/csv">CSV (Excel, ISO-8859-1)</a></li>
+    </ul>
+  </div>
+</div>
+
+<h1 class="page-header">
+  {{graph.properties.prefLabel | localizeValue}}
+</h1>
+<div class="page-header-info">
+  <span ng-if="graph.properties.description">
+    {{graph.properties.description | localizeValue}}<br>
+  </span>
+  <small class="text-muted">{{graph.uri || '-'}}</small>
+</div>
+
+<ul class="nav nav-tabs types">
+  <li role="presentation" class="active" data-toggle="tooltip" data-placement="top"
+      title="{{'all' | translate | capitalize}}" thl-tooltip>
+    <a class="dropdown-toggle" data-toggle="dropdown">
+      <span class="glyphicon glyphicon-home"></span> <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <a ng-href="#/graphs/{{graph.id}}/nodes/">{{'allNodes' | translate | capitalize}}</a>
+      </li>
+      <li>
+        <a ng-href="#/graphs/{{graph.id}}/types/">{{'typeList' | translate | capitalize}}</a>
+      </li>
+      <li role="separator" class="divider"></li>
+      <li ng-repeat="cls in types">
+        <a ng-href="#/graphs/{{graph.id}}/types/{{cls.id}}/nodes/">
+          {{cls.properties.prefLabel | localizeValue:cls.id}}
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li role="presentation" class="{{t.id == type.id && 'active'}}" ng-repeat="t in types"
+      data-toggle="tooltip" data-placement="top"
+      title="{{t.properties.prefLabel | localizeValue:t.id}}" thl-tooltip>
+    <a ng-href="#/graphs/{{t.graph.id}}/types/{{t.id}}/nodes/">
+      <span ng-if="$index < 3">
+        {{t.properties.prefLabel | localizeValue:t.id | limit:12}}
+      </span>
+      <span ng-if="$index >= 3">
+        {{t.id == type.id ? (t.properties.prefLabel | localizeValue:t.id) : '&bull;' | limit:12}}
+      </span>
+    </a>
+  </li>
+</ul>
+
+<br>
+
+
+<div class="row" ng-repeat="t in types" ng-if="!t.properties.configHideFromTypeView[0].value">
+  <div class="col-xs-6">
+    <div class="panel panel-default">
+
+      <div class="panel-heading panel-heading-sm">
+        <h2 class="panel-title panel-title-sm">
+          {{t.properties.prefLabel | localizeValue:t.id}}
+        </h2>
+      </div>
+      <div class="panel-body panel-body-sm">
+        <a class="btn btn-link btn-xs btn-default" ng-if="t.properties.configBrowsingRootNode" ng-href="#/graphs/{{t.graph.id}}/types/{{t.id}}/nodes/{{t.properties.configBrowsingRootNode[0].value}}">
+          <span class="glyphicon glyphicon-list-alt"></span>
+          {{'browse' | translate | capitalize}}
+        </a>
+        <a class="btn btn-link btn-xs btn-default" ng-href="#/graphs/{{t.graph.id}}/types/{{t.id}}/nodes/">
+        <span class="glyphicon glyphicon-search"></span>
+        {{'search' | translate | capitalize}}
+        </a>
+        <a class="btn btn-link btn-xs btn-default" ng-click="newNode(t)">
+          <span class="glyphicon glyphicon-plus"></span>
+          {{'addNew' | translate | capitalize}}
+        </a>
+        <div class="btn-group">
+          <button class="btn btn-link btn-xs btn-default dropdown-toggle" type="button" id="export-menu"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span class="glyphicon glyphicon-download-alt"></span>
+            {{'download' | translate | capitalize}}
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="export-menu">
+            <li><a ng-href="api/graphs/{{graph.id}}/types/{{t.id}}/nodes?max=-1" type="application/json">JSON</a></li>
+            <li><a ng-href="api/graphs/{{graph.id}}/types/{{t.id}}/nodes.csv" type="text/csv">CSV (UTF-8)</a></li>
+            <li><a ng-href="api/graphs/{{graph.id}}/types/{{t.id}}/nodes.csv?delimiter=SEMICOLON&lineBreak=CRLF&quoteAll=true&charset=ISO-8859-1" type="text/csv">CSV (Excel, ISO-8859-1)</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-6">
+    <div class="well" ng-if="t.properties.description">
+      {{t.properties.description | localizeValue}}
+    </div>
+  </div>
+</div>
+
+<hr>
