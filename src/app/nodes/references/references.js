@@ -19,7 +19,7 @@
             typeId: node.type.id
           }, function(refAttrs) {
             $scope.refAttrs = refAttrs;
-            for (var i = 0; i < refAttrs.length; i++) {
+            for (let i = 0; i < refAttrs.length; i++) {
               node.references[refAttrs[i].id] = NodeReferenceList.query({
                 graphId: node.type.graph.id,
                 typeId: node.type.id,
@@ -50,11 +50,11 @@
             typeId: node.type.id
           }, function(refAttrs) {
             $scope.refAttrs = refAttrs;
-            for (var i = 0; i < refAttrs.length; i++) {
-              var attrId = refAttrs[i].id;
-              var refs = node.references[attrId] || [];
-              for (var j = 0; j < refs.length; j++) {
-                var ref = refs[j];
+            for (let i = 0; i < refAttrs.length; i++) {
+              const attrId = refAttrs[i].id;
+              const refs = node.references[attrId] || [];
+              for (let j = 0; j < refs.length; j++) {
+                const ref = refs[j];
                 node.references[attrId][j] = NodeRevision.get({
                   graphId: ref.type.graph.id,
                   typeId: ref.type.id,
@@ -98,11 +98,11 @@
       link: function(scope, elem, attrs) {
 
         function getLocalizedPrefLabel(properties) {
-          var lang = $translate.use();
+          const lang = $translate.use();
 
           if (properties.prefLabel && properties.prefLabel.length > 0) {
-            for (var i = 0; i < properties.prefLabel.length; i++) {
-              if (properties.prefLabel[i].lang == lang) {
+            for (let i = 0; i < properties.prefLabel.length; i++) {
+              if (properties.prefLabel[i].lang === lang) {
                 return properties.prefLabel[i].value;
               }
             }
@@ -122,7 +122,17 @@
               query: query.term
             }, function(results) {
               query.callback({
-                results: results
+                results: results.sort((a, b) => {
+                  const nameA = getLocalizedPrefLabel(a.properties).toUpperCase(); // ignore upper and lowercase
+                  const nameB = getLocalizedPrefLabel(b.properties).toUpperCase(); // ignore upper and lowercase
+                  if (nameA < nameB) {
+                    return -1;
+                  }
+                  if (nameA > nameB) {
+                    return 1;
+                  }
+                  return 0;
+                })
               });
             });
           },
@@ -175,20 +185,20 @@
           }
 
           if (attrs.multiple) {
-            var promiseGet = function(idObject) {
+            const promiseGet = function (idObject) {
               var d = $q.defer();
               Node.get({
                 graphId: scope.refAttr.range.graph.id,
                 typeId: scope.refAttr.range.id,
                 id: idObject.id
-              }, function(result) {
+              }, function (result) {
                 d.resolve(result);
               });
               return d.promise;
             };
 
-            var promises = [];
-            for (var i = 0; i < ngModel.length; i++) {
+            const promises = [];
+            for (let i = 0; i < ngModel.length; i++) {
               promises.push(promiseGet(ngModel[i]));
             }
 
@@ -219,11 +229,11 @@
       link: function(scope, elem, attrs) {
 
         function getLocalizedProperty(property) {
-          var lang = $translate.use();
+          const lang = $translate.use();
 
           if (property && property.length > 0) {
-            for (var i = 0; i < property.length; i++) {
-              if (property[i].lang == lang) {
+            for (let i = 0; i < property.length; i++) {
+              if (property[i].lang === lang) {
                 return property[i].value;
               }
             }

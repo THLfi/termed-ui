@@ -35,8 +35,8 @@ angular.module('termed.directives', [])
           ui.item.data('start', ui.item.index());
         },
         update: function(event, ui) {
-          var start = ui.item.data('start');
-          var end = ui.item.index();
+          const start = ui.item.data('start');
+          const end = ui.item.index();
 
           scope.$apply(function() {
             scope.elements.splice(end, 0, scope.elements.splice(start, 1)[0]);

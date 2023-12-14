@@ -18,9 +18,9 @@ angular.module('termed.graphs.permissions', ['pascalprecht.translate', 'termed.r
           permissionsMap[graphRole] = [];
         }
 
-        var permissions = permissionsMap[graphRole];
+        const permissions = permissionsMap[graphRole];
 
-        var i = permissions.indexOf(permission);
+        const i = permissions.indexOf(permission);
         if (i > -1) {
           permissions.splice(i, 1);
         } else {

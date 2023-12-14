@@ -30,7 +30,7 @@
             });
           });
 
-          for ( var attrId in node.referrers) {
+          for (const attrId in node.referrers) {
             node.referrers[attrId] = NodeReferrerList.query({
               graphId: node.type.graph.id,
               typeId: node.type.id,
@@ -41,7 +41,7 @@
         });
 
         $scope.isEmpty = function(obj) {
-          for ( var i in obj) {
+          for (const i in obj) {
             if (obj.hasOwnProperty(i)) {
               return false;
             }

@@ -106,7 +106,29 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     run: 'suorita',
     lastModifiedDate: 'muokattu',
     warnSlowAllNodesView: 'Huom. näkymän avautuminen voi aineiston koosta riippuen kestää useita minuutteja.',
-    warnIdChange: 'Varoitus: ID:n muuttaminen tuhoaa siihen viittaavat tiedot (esim. luokan ilmentymät tai attribuuttien arvot). On suositeltavaa ettei tunnuksia muuteta aineiston tietomallin määrittelyvaiheen jälkeen.'
+    warnIdChange: 'Varoitus: ID:n muuttaminen tuhoaa siihen viittaavat tiedot (esim. luokan ilmentymät tai attribuuttien arvot). On suositeltavaa ettei tunnuksia muuteta aineiston tietomallin määrittelyvaiheen jälkeen.',
+    prefLabel: "termi",
+    altLabel: "synonyymi",
+    avoidableLabel: "vältettävä termi",
+    deprecatedLabel: "hylättävä termi",
+    definition: "määritelmä",
+    note: "kommentti",
+    row: 'Rivi',
+    cancel: 'peruuta',
+    sendFile: 'lähetä tiedosto',
+    translationFile: 'Käännöstiedosto (csv)',
+    translationFileSendTitle: 'Käännöstiedoston lähetys',
+    translationSelectFile: 'Valitse käännöstiedosto',
+    translationRowsTotal: 'Tiedostossa rivejä yht. {{count}} kpl',
+    translationRowsValid: 'Tiedostossa päivitettäviä rivejä yht. {{count}} kpl',
+    translationRowsInvalid: 'Tiedostossa virheellisiä rivejä yht. {{count}} kpl',
+    translationHeadersMissingOrNotUTF8: 'Sarakkeiden otsikot puuttuvat tai csv ei ole UTF-8 muodossa!',
+    translationRowsMissing: 'Tiedostossa ei ole yhtään arvoriviä tai ne ovat virheellisiä.',
+    translationCsvOK: 'Tiedosto kunnossa! Päivitettäviä rivejä yht. {{count}} kpl',
+    translationButtonCheckCSV: 'Tarkista CSV',
+    translationButtonSendCSV: 'Lähetä CSV',
+    translationIdOrGraphIdMissing: 'Id tai graafin id puuttuu',
+    translationCsvSendOK: 'CSV:n tietojen lähetys onnistui!'
   })
 
   .translations('en', {
@@ -206,9 +228,31 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     run: 'run',
     lastModifiedDate: 'date modified',
     warnSlowAllNodesView: 'Note that opening all nodes view might take several minutes.',
-    warnIdChange: 'Warning: Changing ID deletes all data referring to the ID (e.g. instances of a type or values of an attribute). It\'s recommended that ID values are not changed after initial graph definition.'
+    warnIdChange: 'Warning: Changing ID deletes all data referring to the ID (e.g. instances of a type or values of an attribute). It\'s recommended that ID values are not changed after initial graph definition.',
+    prefLabel: "prefLabel",
+    altLabel: "altLabel",
+    avoidableLabel: "avoidableLabel",
+    deprecatedLabel: "deprecatedLabel",
+    definition: "definition",
+    note: "note",
+    row: 'Row',
+    cancel: 'cancel',
+    sendFile: 'send file',
+    translationFile: 'Translation file (csv)',
+    translationFileSendTitle: 'Send translation file',
+    translationSelectFile: 'Select translation file',
+    translationRowsTotal: 'File total rows {{count}} pcs',
+    translationRowsValid: 'File update rows {{count}} pcs',
+    translationRowsInvalid: 'File invalid rows {{count}} pcs',
+    translationsHeadersMissingOrNotUTF8: 'Column titles are missing or csv not in UTF-8 format!',
+    translationRowsMissing: 'File doesn\'t have any valid row or rows are invalid.',
+    translationCsvOK: 'File is valid! Rows to update total {{count}} pcs',
+    translationButtonCheckCSV: 'Check CSV',
+    translationButtonSendCSV: 'Send CSV',
+    translationIdOrGraphIdMissing: 'Id or graph id is missing',
+    translationCsvSendOK: 'Sending csv was successful!'
   });
 
-});
+})
 
 })(window.angular);
