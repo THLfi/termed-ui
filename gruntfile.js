@@ -56,7 +56,10 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      files: ['gruntfile.js', 'src/app/**/*.js']
+      files: ['gruntfile.js', 'src/app/**/*.js'],
+      options: {
+        'esversion': 6,
+      }
     },
 
     karma: {

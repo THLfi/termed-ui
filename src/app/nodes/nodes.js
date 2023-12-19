@@ -192,7 +192,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     { type: "p", attribute: "deprecatedLabel" },
     { type: "p", attribute: "definition" },
     { type: "p", attribute: "note" }
-  ]
+  ];
 
   function parseCriteriaModel(type, criteria) {
     if (criteria.length === 0) {
@@ -314,7 +314,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       }
     }
     document.getElementById("all_fields").checked = inputSelects.length === 7;
-  }
+  };
 
   $scope.setSelectAttributes = function() {
     const inputSelects = [];
@@ -326,7 +326,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     }
     $scope.selectStr = inputSelects.join(",").toString();
     document.getElementById("all_fields").checked = inputSelects.length === 7;
-  }
+  };
 
   $scope.loadMoreResults = function() {
     $scope.max += 50;
@@ -421,7 +421,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         inputFile.value = '';
         var csvInfo = document.getElementById('csvInfo');
         csvInfo.innerHTML = "";
-        document.getElementById("warningsArea").style.display = 'none'  
+        document.getElementById("warningsArea").style.display = 'none';
       break;
       default:
         console.log('Target not found', e.currentTarget.id);
@@ -506,14 +506,14 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       var invalidDiv = document.createElement('div');
       var updateDiv = document.createElement('div');
 
-      totalDiv.textContent = $translate.instant('translationRowsTotal', {count: totalRowsInFile});;
+      totalDiv.textContent = $translate.instant('translationRowsTotal', {count: totalRowsInFile});
       csvInfo.append(totalDiv);
 
       if (headerRow.length == 0){
 
         invalidDiv.textContent = $translate.instant('translationHeadersMissingOrNotUTF8');
         csvInfo.append(invalidDiv);
-        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("warningsArea").style.display = 'block';
         document.getElementById("csvOk").style.display= 'none';
         document.getElementById("csvWarning").style.display= 'none';
         document.getElementById("csvError").style.display= 'block';
@@ -523,7 +523,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
         invalidDiv.textContent = $translate.instant('translationRowsMissing');
         csvInfo.append(invalidDiv);
-        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("warningsArea").style.display = 'block';
         document.getElementById("csvOk").style.display= 'none';
         document.getElementById("csvWarning").style.display= 'none';
         document.getElementById("csvError").style.display= 'block';
@@ -532,7 +532,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         
         invalidDiv.textContent = $translate.instant('translationCsvOK', {count: validRows.size});
         csvInfo.append(invalidDiv);
-        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("warningsArea").style.display = 'block';
         document.getElementById("csvOk").style.display= 'block';
         document.getElementById("csvWarning").style.display= 'none';
         document.getElementById("csvError").style.display= 'none';
@@ -544,7 +544,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         csvInfo.append(updateDiv);
         invalidDiv.textContent = $translate.instant('translationRowsInvalid', {count: invalidRows.size});
         csvInfo.append(invalidDiv);
-        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("warningsArea").style.display = 'block';
         document.getElementById("csvOk").style.display= 'none';
         document.getElementById("csvWarning").style.display= 'block';
         document.getElementById("csvError").style.display= 'none';
@@ -557,7 +557,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
       }
     };
-  }
+  };
 
   function validNodesToUpdate(headerRow, nodesToUpdate) {
 
@@ -587,7 +587,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       if(id.length > 0 && graphId.length > 0){
         updateSingleNode(id, graphId, columnAndValues);
       } 
-    })
+    });
 
     $('#translationsCsvModal').modal('hide');
     $('#successModal').modal('show');
@@ -657,7 +657,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
         // Update only if status has been marked for translated
         if (canBeTranslated){
-          node.references.status = statusWithOutTranslate
+          node.references.status = statusWithOutTranslate;
           node.$update({
             graphId: graphId,
             typeId: 'Concept',
@@ -746,7 +746,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         var invalidDiv = document.createElement('div');
         invalidDiv.textContent = "Tiedostossa ei ole yhtään arvoriviä tai ne ovat virheellisiä.";
         csvInfo.append(invalidDiv);
-        document.getElementById("warningsArea").style.display = 'block'  
+        document.getElementById("warningsArea").style.display = 'block';
         document.getElementById("csvOk").style.display= 'none';
         document.getElementById("csvWarning").style.display= 'none';
         document.getElementById("csvError").style.display= 'block';

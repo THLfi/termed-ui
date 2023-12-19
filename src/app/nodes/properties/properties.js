@@ -77,7 +77,7 @@
         $scope.removeRow = function(row) {
           row.langValue.lang = '';
           row.langValue.value = '';
-        }
+        };
         
       }
     };

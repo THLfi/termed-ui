@@ -253,6 +253,6 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     translationCsvSendOK: 'Sending csv was successful!'
   });
 
-})
+});
 
 })(window.angular);
