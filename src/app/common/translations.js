@@ -112,7 +112,7 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     avoidableLabel: "vältettävä termi",
     deprecatedLabel: "hylättävä termi",
     definition: "määritelmä",
-    note: "kommentti",
+    note: "huomautus",
     row: 'Rivi',
     cancel: 'peruuta',
     sendFile: 'lähetä tiedosto',
