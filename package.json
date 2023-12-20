@@ -16,23 +16,12 @@
     "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^3.2.0",
-    "grunt-contrib-uglify": "^2.0.0",
-    "grunt-karma": "^4.0.2",
+    "grunt-contrib-watch": "^1.1.0",
     "grunt-middleware-proxy": "^1.0.6",
-    "grunt-wiredep": "^3.0.1",
-    "jasmine-core": "^2.3.4",
-    "karma": "^6.4.1",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-jasmine": "^1.0.2",
-    "karma-phantomjs-launcher": "^1.0.2",
-    "phantomjs-prebuilt": "^2.1.13"
+    "grunt-wiredep": "^3.0.1"
   },
   "scripts": {
-    "prebuild": "npm install",
-    "build": "grunt"
-  },
-  "dependencies": {
-    "@angular/cli": "^15.0.0",
-    "angular": "^1.8.3"
+    "build": "./node/node -- node_modules/grunt-cli/bin/grunt",
+    "start": "./node/node -- node_modules/grunt-cli/bin/grunt dev"
   }
 }

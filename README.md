@@ -2,22 +2,26 @@
 
 Termed is a web-based vocabulary and metadata editor. 
 
-Termed UI provides the front-end (Javascript-based user interface) of the editor.
+Termed UI provides the frontend (JavaScript-based user interface) of the editor.
 
-## Running
+## Setting up dev environment
+
+Required tools are JDK 8 (preferably Temurin) and Maven 3.8.
 
 First install and start [Termed API](https://github.com/THLfi/termed-api).
 
-If `npm`, `bower` and `grunt` are already installed in the system, run:
-```
-npm install
-bower install
-grunt dev
-```
-UI should respond at port `http://localhost:8000`.
+Install Node, npm and npm & bower dependencies using frontend-maven-plugin:
 
-One can also use `npm` and other tools installed by maven front-end plugin by running:
+```bash
+mvn verify
 ```
-mvn install
-./node_modules/grunt-cli/bin/grunt dev
+
+Now you can start the application in development mode:
+
+```bash
+./node/npm start
 ```
+
+UI should respond at `http://localhost:8000`.
+
+Note that Termed UI assumes that Termed API is running at `http://localhost:8080`.

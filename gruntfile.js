@@ -4,15 +4,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-wiredep');
-  grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-middleware-proxy');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', ['jshint', 'karma:unit', 'wiredep', 'copy']);
-  grunt.registerTask('dev', ['setupProxies:server', 'connect', 'karma:watch']);
+  grunt.registerTask('default', ['jshint', 'wiredep', 'copy']);
+  grunt.registerTask('dev', ['setupProxies:server', 'connect', 'watch']);
 
   grunt.initConfig({
 
@@ -58,31 +57,14 @@ module.exports = function(grunt) {
     jshint: {
       files: ['gruntfile.js', 'src/app/**/*.js'],
       options: {
-        'esversion': 6,
+        esversion: 6
       }
     },
 
-    karma: {
-      options: {
-        frameworks: ['jasmine'],
-        browsers: ['PhantomJS'],
-        files: [
-          'src/lib/angular/angular.js',
-          'src/lib/angular-mocks/angular-mocks.js',
-          'test/**/*.js'
-        ]
-      },
-      unit: {
-        options: {
-          singleRun: true,
-          autoWatch: false
-        }
-      },
-      watch: {
-        options: {
-          singleRun: false,
-          autoWatch: true
-        }
+    watch: {
+      scripts: {
+        files: 'src/**/*.js',
+        tasks: ['jshint']
       }
     }
 
