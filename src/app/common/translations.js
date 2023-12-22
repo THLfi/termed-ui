@@ -128,7 +128,7 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     translationButtonCheckCSV: 'Tarkista CSV',
     translationButtonSendCSV: 'Lähetä CSV',
     translationIdOrGraphIdMissing: 'Id tai graafin id puuttuu',
-    translationCsvSendOK: 'CSV:n tietojen lähetys onnistui!'
+    translationCsvSendOK: 'CSV käännöstiedoston tuonti -toiminto suoritettu!'
   })
 
   .translations('en', {

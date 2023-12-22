@@ -194,6 +194,50 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     { type: "p", attribute: "note" }
   ];
 
+  $scope.csvStatusNotInTranslation = 0;
+  $scope.csvTranslateRowCount = 0;
+  $scope.csvTranslateSuccessfullRowsUpdated = 0;
+  $scope.csvTranslateRownumbersWithoutIdOrGraphId = [];
+  $scope.csvTranslateStatusMissingIds = [];
+  $scope.csvTranslateValidRowsNumbers = [];
+
+  $scope.$watch('csvTranslateSuccessfullRowsUpdated', function() {
+    if ($scope.csvTranslateSuccessfullRowsUpdated > 0) {
+      $scope.success = "Käännökset lisätty onnistuneesti. Päivitettyjen rivien lkm: " + $scope.csvTranslateSuccessfullRowsUpdated;
+    } else {
+      $scope.success = "";
+    }
+  });
+
+  $scope.$watch('csvTranslateRownumbersWithoutIdOrGraphId', function(newVal, oldVal) {
+    if (newVal != undefined && newVal.length > 0) {
+      $scope.error = "Id tai graphId puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
+    } else {
+      $scope.error = "";
+    }
+  }, true);
+
+  $scope.$watch('csvTranslateStatusMissingIds', function(newVal, oldVal) {
+    if (newVal != undefined && newVal.length > 0) {
+  
+      // Nasty solution but Xmaas vacation started over 1 hour ago
+      // This adds line end of the error list every time when no status line is found
+      // Might overide other error, if comes in wrong order but this will be written again 
+      // later. 
+      if($scope.error.indexOf('status puuttuu.') == -1)
+      {
+        $scope.error += "Käännöksessä status puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
+      } else {
+        let errorBegin =  $scope.error.substring(0, $scope.error.indexOf('Käännöksessä status puuttuu.') );
+        let errorEnd =  $scope.error.substring($scope.error.indexOf('Käännöksessä status puuttuu.') );
+        $scope.error = errorBegin + " Käännöksessä status puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
+      }
+      
+    } else {
+      $scope.error = "";
+    }
+  }, true);
+
   function parseCriteriaModel(type, criteria) {
     if (criteria.length === 0) {
       return [];
@@ -474,7 +518,6 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
           const myArray = lines[i].split(";");
 
           myArray.forEach(field => {
-            // console.log(field, csvData[field]);
             if (headerRow.length == 0) {
               headerRow.push("\ufeff"+field);
             } else {
@@ -498,6 +541,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
               invalidRows.set((i + 1), $translate.instant('translationIdOrGraphIdMissing'));
             } else {
               validRows.set(id, lines[i]);
+              $scope.csvTranslateValidRowsNumbers.push(id + ':' + (i + 1));
             }
          }
          totalRowsInFile = i;
@@ -560,7 +604,6 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   };
 
   function validNodesToUpdate(headerRow, nodesToUpdate) {
-
     var columnAndValues = new Map();
 
     nodesToUpdate.forEach(function(value, key) {
@@ -586,7 +629,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       // Don't waste time if id or graph id is missing
       if(id.length > 0 && graphId.length > 0){
         updateSingleNode(id, graphId, columnAndValues);
-      } 
+      }
     });
 
     $('#translationsCsvModal').modal('hide');
@@ -595,8 +638,8 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
 
  
-  function updateSingleNode(id, graphId, columnAndValues) {
-
+  function updateSingleNode(id, graphId, columnAndValuesImp) {
+    const columnAndValues = new Map(columnAndValuesImp);
     var nodeToUpdate = Node.get({
       graphId: graphId,
       typeId: 'Concept',
@@ -607,7 +650,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
     columnAndValues.forEach(function(value, key) {
 
-      if(value.length > 0) {
+    if(value.length > 0) {
       
       if(key.startsWith('properties.')) {
         const field = key.split('.');
@@ -618,14 +661,12 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
             var filteredLanguages = node.properties[field[1]].filter(text => text.lang != field[2]);
             node.properties[field[1]] = filteredLanguages;
             const rows = value.split('|').filter(row => row !== '');
-
             rows.forEach(row => {
               var addLanguage = {lang: field[2], value: row, regex: '(?s)^.*$'};
               if(row.length > 0) {
                 node.properties[field[1]].push(addLanguage);
               }
             });
-
           }
         } else {
 
@@ -638,7 +679,6 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
               var addLanguage = {lang: field[2], value: row, regex: '(?s)^.*$'};
               node.properties[field[1]].push(addLanguage);
             });
-
           }
         }
       }
@@ -650,11 +690,9 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         typeId: 'Status',
         code: 'translate'
       }).$promise.then(function(statusNode) {
-  
         const statusId = statusNode.filter(node => node.code=='translate');
         const statusWithOutTranslate = node.references.status.filter(status => status.id != statusId[0].id);
         const canBeTranslated = node.references.status.filter(status => status.id == statusId[0].id).length > 0;
-
         // Update only if status has been marked for translated
         if (canBeTranslated){
           node.references.status = statusWithOutTranslate;
@@ -662,9 +700,15 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
             graphId: graphId,
             typeId: 'Concept',
             id: id
-          }, function(error) {
+          }, function(success) {
+              $scope.csvTranslateSuccessfullRowsUpdated++;
+            }, function(error) {
             $scope.error = error;
           });
+        } else {
+          const desiredElement = $scope.csvTranslateValidRowsNumbers.find(element => element.startsWith(id));
+          $scope.csvTranslateStatusMissingIds.push(desiredElement.substring(desiredElement.lastIndexOf(':') + 1));    
+          $scope.csvStatusNotInTranslation++;
         } 
 
         return statusId;
@@ -674,7 +718,11 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   }
 
   $scope.uploadCsvFile = function() {
- 
+    $scope.csvStatusNotInTranslation = 0;
+    $scope.csvTranslateRowCount = 0;
+    $scope.csvTranslateSuccessfullRowsUpdated = 0;
+    $scope.csvTranslateRownumbersWithoutIdOrGraphId = [];
+    $scope.csvTranslateStatusMissingIds = [];
     const fileInput = document.getElementById('file-upload');
     if (fileInput.files.length == 0) {
       return;
@@ -733,11 +781,18 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
           if(regexExp.test(id) == false || regexExp.test(graphId) == false) {
             invalidRows.set((i + 1), $translate.instant('translationIdOrGraphIdMissing'));
+            $scope.csvTranslateRowCount++;
           } else {
             validRows.set(id, lines[i]);
+            $scope.csvTranslateRowCount++;
           }
         }
 
+      }
+      if(invalidRows.size > 0) {
+        invalidRows.forEach((valuesArray, key) => {
+          $scope.csvTranslateRownumbersWithoutIdOrGraphId.push(key);
+        });
       }
 
       if (headerRow.length > 0 && validRows.size > 0){
@@ -751,9 +806,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         document.getElementById("csvWarning").style.display= 'none';
         document.getElementById("csvError").style.display= 'block';
       }
-
     };
-
   };
 
   $scope.newNode = function() {

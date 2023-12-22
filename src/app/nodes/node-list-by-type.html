@@ -370,8 +370,14 @@
         </button>
       </div>
       <div class="modal-body">
-        {{'translationCsvSendOK' | translate}}
-        <div id="csvUpdateInfo"></div>
+        <div id="csvUpdateInfo">        
+          Lisätietoa (Rivien kokonaislukumäärä: {{csvTranslateRowCount}}):
+          <ul>
+            <li ng-if="success">{{success}}</li> 
+            <li ng-if="error">{{error}}</li>
+            <li ng-if="csvStatusNotInTranslation > 0">Oikea status ("Käännöksessä") puuttuu riveiltä: {{csvTranslateStatusMissingIds}}. Yht. ({{csvStatusNotInTranslation}} kpl)</li>
+          </ul>          
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
