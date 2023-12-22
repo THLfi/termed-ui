@@ -198,6 +198,9 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   $scope.csvTranslateRowCount = 0;
   $scope.csvTranslateSuccessfullRowsUpdated = 0;
   $scope.csvTranslateRownumbersWithoutIdOrGraphId = [];
+  $scope.csvTranslateStatusMissingIds = [];
+  $scope.csvTranslateValidRowsNumbers = [];
+
   $scope.$watch('csvTranslateSuccessfullRowsUpdated', function() {
     console.log("Watching csvTranslateSuccessfullRowsUpdated");
     if ($scope.csvTranslateSuccessfullRowsUpdated > 0) {
@@ -206,10 +209,36 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       $scope.success = "";
     }
   });
+
   $scope.$watch('csvTranslateRownumbersWithoutIdOrGraphId', function(newVal, oldVal) {
     console.log("Watching csvTranslateRownumbersWithoutIdOrGraphId");
     if (newVal != undefined && newVal.length > 0) {
       $scope.error = "Id tai graphId puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
+    } else {
+      $scope.error = "";
+    }
+  }, true);
+
+  $scope.$watch('csvTranslateStatusMissingIds', function(newVal, oldVal) {
+    console.log("Watching csvTranslateStatusMissingIds");
+    if (newVal != undefined && newVal.length > 0) {
+      console.log('---Pasi, $scope.error', $scope.error)
+
+      // Nasty solution but Xmaas vacation started over 1 hour ago
+      // This adds line end of the error list every time when no status line is found
+      // Might overide other error, if comes in wrong order but this will be written again 
+      // later. 
+      if($scope.error.indexOf('status puuttuu.') == -1)
+      {
+        $scope.error += "Käännöksessä status puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
+      } else {
+        let errorBegin =  $scope.error.substring(0, $scope.error.indexOf('Käännöksessä status puuttuu.') );
+        console.log('---Pasi errorBegin', errorBegin)
+        let errorEnd =  $scope.error.substring($scope.error.indexOf('Käännöksessä status puuttuu.') );
+        console.log('---Pasi errorEnd', errorEnd)
+        $scope.error = errorBegin + " Käännöksessä status puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
+      }
+      
     } else {
       $scope.error = "";
     }
@@ -519,6 +548,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
               invalidRows.set((i + 1), $translate.instant('translationIdOrGraphIdMissing'));
             } else {
               validRows.set(id, lines[i]);
+              $scope.csvTranslateValidRowsNumbers.push(id + ':' + (i + 1));
             }
          }
          totalRowsInFile = i;
@@ -683,6 +713,8 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
             $scope.error = error;
           });
         } else {
+          const desiredElement = $scope.csvTranslateValidRowsNumbers.find(element => element.startsWith(id));
+          $scope.csvTranslateStatusMissingIds.push(desiredElement.substring(desiredElement.lastIndexOf(':') + 1));    
           $scope.csvStatusNotInTranslation++;
         } 
 
@@ -697,6 +729,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     $scope.csvTranslateRowCount = 0;
     $scope.csvTranslateSuccessfullRowsUpdated = 0;
     $scope.csvTranslateRownumbersWithoutIdOrGraphId = [];
+    $scope.csvTranslateStatusMissingIds = [];
     const fileInput = document.getElementById('file-upload');
     if (fileInput.files.length == 0) {
       return;
