@@ -202,7 +202,6 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   $scope.csvTranslateValidRowsNumbers = [];
 
   $scope.$watch('csvTranslateSuccessfullRowsUpdated', function() {
-    console.log("Watching csvTranslateSuccessfullRowsUpdated");
     if ($scope.csvTranslateSuccessfullRowsUpdated > 0) {
       $scope.success = "Käännökset lisätty onnistuneesti. Päivitettyjen rivien lkm: " + $scope.csvTranslateSuccessfullRowsUpdated;
     } else {
@@ -211,7 +210,6 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   });
 
   $scope.$watch('csvTranslateRownumbersWithoutIdOrGraphId', function(newVal, oldVal) {
-    console.log("Watching csvTranslateRownumbersWithoutIdOrGraphId");
     if (newVal != undefined && newVal.length > 0) {
       $scope.error = "Id tai graphId puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
     } else {
@@ -220,10 +218,8 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   }, true);
 
   $scope.$watch('csvTranslateStatusMissingIds', function(newVal, oldVal) {
-    console.log("Watching csvTranslateStatusMissingIds");
     if (newVal != undefined && newVal.length > 0) {
-      console.log('---Pasi, $scope.error', $scope.error)
-
+  
       // Nasty solution but Xmaas vacation started over 1 hour ago
       // This adds line end of the error list every time when no status line is found
       // Might overide other error, if comes in wrong order but this will be written again 
@@ -233,9 +229,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         $scope.error += "Käännöksessä status puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
       } else {
         let errorBegin =  $scope.error.substring(0, $scope.error.indexOf('Käännöksessä status puuttuu.') );
-        console.log('---Pasi errorBegin', errorBegin)
         let errorEnd =  $scope.error.substring($scope.error.indexOf('Käännöksessä status puuttuu.') );
-        console.log('---Pasi errorEnd', errorEnd)
         $scope.error = errorBegin + " Käännöksessä status puuttuu. Rivinumerot: " + newVal + " (" + newVal.length + " kpl)";
       }
       
@@ -524,7 +518,6 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
           const myArray = lines[i].split(";");
 
           myArray.forEach(field => {
-            // console.log(field, csvData[field]);
             if (headerRow.length == 0) {
               headerRow.push("\ufeff"+field);
             } else {
