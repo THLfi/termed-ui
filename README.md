@@ -16,10 +16,27 @@ Install Node, npm and npm & bower dependencies using frontend-maven-plugin:
 mvn verify
 ```
 
+Note: On Windows workstation you must edit the scripts section in `package.json` to use backslashes instead of slashes before running the above:
+
+```json
+{
+  "scripts": {
+    "build": ".\\node\\node -- node_modules/grunt-cli/bin/grunt",
+    "start": ".\\node\\node -- node_modules/grunt-cli/bin/grunt dev"
+  }
+}
+```
+
 Now you can start the application in development mode:
 
 ```bash
 ./node/npm start
+```
+
+Or if you are using Windows command line:
+
+```
+.\node\npm start
 ```
 
 UI should respond at `http://localhost:8000`.
