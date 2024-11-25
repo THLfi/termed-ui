@@ -937,14 +937,76 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
 
 })
 
-.controller('NodeEditCtrl', function($scope, $routeParams, $location, $translate, Node, Type, Graph) {
+.controller('NodeEditCtrl', function($scope, $routeParams, $location, $translate, Node, Type, Graph, $sce) {
 
   $scope.lang = $translate.use();
 
+  $scope.checkboxState = false;
+  $scope.editEnabled = false;
+  $scope.originalCode = null;
+  $scope.originalUri = null;
+  $scope.confirmEdit = function() {
+    if ($scope.editEnabled) {
+      $('#editConfirmModal').modal('show'); // Show confirmation modal
+    }
+  };
+
+  // Handle popup warning translations in safe way
+  $scope.trustedEditWarning = $sce.trustAsHtml($translate.instant('warnEditCodeUri'));
+  $scope.trustedRevertWarning = $sce.trustAsHtml($translate.instant('warnRevertCodeUri'));
+
+  // Handles the checkbox toggle
+  $scope.handleCheckboxToggle = function() {
+    if ($scope.checkboxState) {
+      $('#editConfirmModal').modal('show');
+    } else {
+      if ($scope.node.code !== $scope.originalCode || $scope.node.uri !== $scope.originalUri) {
+        $('#restoreConfirmModal').modal('show');
+      } else {
+        $scope.disableEdit();
+      }
+    }
+  };
+
+  // Confirm enabling editing
+  $scope.confirmEnableEdit = function() {
+    $('#editConfirmModal').modal('hide');
+    $scope.editEnabled = true;
+  };
+
+  // Cancel enabling editing
+  $scope.cancelEnableEdit = function() {
+    $('#editConfirmModal').modal('hide');
+    $scope.checkboxState = false;
+  };
+
+  // Confirm disabling editing and restoring values
+  $scope.confirmDisableEdit = function() {
+    $('#restoreConfirmModal').modal('hide');
+    $scope.disableEdit();
+  };
+
+  // Cancel disabling editing
+  $scope.cancelDisableEdit = function() {
+    $('#restoreConfirmModal').modal('hide');
+    $scope.checkboxState = true;
+  };
+
+  // Disable editing and restore original values
+  $scope.disableEdit = function() {
+    $scope.editEnabled = false;
+    $scope.node.code = angular.copy($scope.originalCode);
+    $scope.node.uri = angular.copy($scope.originalUri);
+  };
+
+  // Load the node
   $scope.node = Node.get({
     graphId: $routeParams.graphId,
     typeId: $routeParams.typeId,
     id: $routeParams.id
+  }, function(node) {
+    $scope.originalCode = angular.copy(node.code); // Save original Code
+    $scope.originalUri = angular.copy(node.uri); // Save original URI
   });
 
   $scope.type = Type.get({

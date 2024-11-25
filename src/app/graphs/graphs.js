@@ -79,14 +79,74 @@ angular.module('termed.graphs', ['ngRoute', 'termed.rest', 'termed.graphs.proper
 
 })
 
-.controller('GraphEditCtrl', function($scope, $routeParams, $location, $translate, Graph, Type, TypeList, PropertyList, GraphNodeList, TypeNodeList, GraphDump) {
+.controller('GraphEditCtrl', function($scope, $routeParams, $location, $translate, Graph, Type, TypeList, PropertyList, GraphNodeList, TypeNodeList, GraphDump, $sce) {
 
   $scope.lang = $translate.use();
+
+  $scope.checkboxState = false;
+  $scope.editEnabled = false;
+  $scope.originalCode = null;
+  $scope.originalUri = null;
+  $scope.confirmEdit = function() {
+    if ($scope.editEnabled) {
+      $('#editConfirmModal').modal('show'); // Show confirmation modal
+    }
+  };
+
+  // Handle popup warning translations in safe way
+  $scope.trustedEditWarning = $sce.trustAsHtml($translate.instant('warnEditCodeUri'));
+  $scope.trustedRevertWarning = $sce.trustAsHtml($translate.instant('warnRevertCodeUri'));
+
+  // Handles the checkbox toggle
+  $scope.handleCheckboxToggle = function() {
+    if ($scope.checkboxState) {
+      $('#editConfirmModal').modal('show');
+    } else {
+      if ($scope.graph.code !== $scope.originalCode || $scope.graph.uri !== $scope.originalUri) {
+        $('#restoreConfirmModal').modal('show');
+      } else {
+        $scope.disableEdit();
+      }
+    }
+  };
+
+  // Confirm enabling editing
+  $scope.confirmEnableEdit = function() {
+    $('#editConfirmModal').modal('hide');
+    $scope.editEnabled = true;
+  };
+
+  // Cancel enabling editing
+  $scope.cancelEnableEdit = function() {
+    $('#editConfirmModal').modal('hide');
+    $scope.checkboxState = false;
+  };
+
+  // Confirm disabling editing and restoring values
+  $scope.confirmDisableEdit = function() {
+    $('#restoreConfirmModal').modal('hide');
+    $scope.disableEdit();
+  };
+
+  // Cancel disabling editing
+  $scope.cancelDisableEdit = function() {
+    $('#restoreConfirmModal').modal('hide');
+    $scope.checkboxState = true;
+  };
+
+  // Disable editing and restore original values
+  $scope.disableEdit = function() {
+    $scope.editEnabled = false;
+    $scope.graph.code = angular.copy($scope.originalCode);
+    $scope.graph.uri = angular.copy($scope.originalUri);
+  };
 
   $scope.graph = Graph.get({
     graphId: $routeParams.graphId
   }, function(graph) {
     $scope.types = TypeList.query({ graphId: graph.id });
+    $scope.originalCode = angular.copy(graph.code); // Save original Code
+    $scope.originalUri = angular.copy(graph.uri); // Save original URI
   });
 
   $scope.properties = PropertyList.query();
