@@ -128,7 +128,13 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     translationButtonCheckCSV: 'Tarkista CSV',
     translationButtonSendCSV: 'Lähetä CSV',
     translationIdOrGraphIdMissing: 'Id tai graafin id puuttuu',
-    translationCsvSendOK: 'CSV käännöstiedoston tuonti -toiminto suoritettu!'
+    translationCsvSendOK: 'CSV käännöstiedoston tuonti -toiminto suoritettu!',
+    warnEditCodeUri: '<b>Koodi</b>- tai <b>URI</b>-tietokenttiä ei tule muokata ilman erityistä syytä. Oletko varma, että haluat muokata tietokentän sisältöä? Muokkaaminen voi vaikuttaa sanastoaineiston lataus- tai tuontikäsittelyihin.',
+    warnRevertCodeUri: 'Haluatko peruuttaa tekemäsi muutokset ja palauttaa <b>Koodi</b>- tai <b>URI</b>-tietokentässä olleen alkuperäisen sisällön? Paina Kyllä-painiketta.<br>Haluatko jatkaa ja tallentaa tekemäsi muutokset? Paina Ei-painiketta.',
+    allowEditCodeUri: 'Salli Koodin ja URI:n muokkaus',
+    warning: "varoitus",
+    yes: "kyllä",
+    no: "ei",
   })
 
   .translations('en', {
@@ -250,7 +256,13 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     translationButtonCheckCSV: 'Check CSV',
     translationButtonSendCSV: 'Send CSV',
     translationIdOrGraphIdMissing: 'Id or graph id is missing',
-    translationCsvSendOK: 'Sending csv was successful!'
+    translationCsvSendOK: 'Sending csv was successful!',
+    warnEditCodeUri: "<b>Code</b> or <b>URI</b> fields should not be edited without a specific reason. Are you sure you want to edit the field content? Editing may affect vocabulary data loading or import processes.",
+    warnRevertCodeUri: 'Do you want to cancel your changes and restore the original content of the <b>Code</b> or <b>URI</b> field? Press Yes.<br>Do you want to proceed and save your changes? Press No.',
+    allowEditCodeUri: 'Allow editing of Code and URI',
+    warning: "warning",
+    yes: "yes",
+    no: "no",
   });
 
 });

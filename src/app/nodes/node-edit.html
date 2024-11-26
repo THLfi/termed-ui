@@ -59,17 +59,20 @@
 
 <form role="form">
 
+    <!-- Checkbox with ng-model for editing toggle -->
     <div class="form-group">
-        <label>URI</label>
-
-        <input type="text" class="form-control" ng-model="node.uri">
-        
+        <label>{{'allowEditCodeUri' | translate | capitalize}}</label><br>
+        <input type="checkbox" ng-model="checkboxState" ng-change="handleCheckboxToggle()">
     </div>
 
     <div class="form-group">
         <label>{{'code' | translate | capitalize}}</label>
+        <input type="text" class="form-control" ng-model="node.code" ng-readonly="!editEnabled">
+    </div>
 
-        <input type="text" class="form-control" ng-model="node.code">
+    <div class="form-group">
+        <label>URI</label>
+        <input type="text" class="form-control" ng-model="node.uri" ng-readonly="!editEnabled">
     </div>
 
     <thl-node-properties-edit node="node"></thl-node-properties-edit>
@@ -77,6 +80,42 @@
     <thl-node-references-edit node="node"></thl-node-references-edit>
 
 </form>
+
+<!-- Popup for Warning -->
+<div class="modal fade" id="editConfirmModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{'warning' | translate | capitalize}}</h5>
+            </div>
+            <div class="modal-body">
+                <p ng-bind-html="trustedEditWarning"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="confirmEnableEdit()">{{'yes' | translate | capitalize}}</button>
+                <button type="button" class="btn btn-secondary" ng-click="cancelEnableEdit()">{{'no' | translate | capitalize}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popup for Reset Warning -->
+<div class="modal fade" id="restoreConfirmModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{'warning' | translate | capitalize}}</h5>
+            </div>
+            <div class="modal-body">
+                <p ng-bind-html="trustedRevertWarning"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="confirmDisableEdit()">{{'yes' | translate | capitalize}}</button>
+                <button type="button" class="btn btn-secondary" ng-click="cancelDisableEdit()">{{'no' | translate | capitalize}}</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <hr>
 
