@@ -40,7 +40,10 @@
     <!-- Checkbox with ng-model for editing toggle -->
     <div class="form-group">
         <label>{{'allowEditCodeUri' | translate | capitalize}}</label><br>
-        <input type="checkbox" ng-model="checkboxState" ng-change="handleCheckboxToggle()">
+        <input
+                type="checkbox"
+                ng-checked="checkboxState"
+                ng-click="attemptToggleCheckbox($event)">
     </div>
 
     <div class="form-group">

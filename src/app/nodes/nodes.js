@@ -942,6 +942,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   $scope.lang = $translate.use();
 
   $scope.checkboxState = false;
+  $scope.tempCheckboxState = false;
   $scope.editEnabled = false;
   $scope.originalCode = null;
   $scope.originalUri = null;
@@ -951,45 +952,57 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     }
   };
 
-  // Handle popup warning translations in safe way
-  $scope.trustedEditWarning = $sce.trustAsHtml($translate.instant('warnEditCodeUri'));
-  $scope.trustedRevertWarning = $sce.trustAsHtml($translate.instant('warnRevertCodeUri'));
+  $scope.attemptToggleCheckbox = function(event) {
 
-  // Handles the checkbox toggle
-  $scope.handleCheckboxToggle = function() {
-    if ($scope.checkboxState) {
-      $('#editConfirmModal').modal('show');
+    const hasChanges = $scope.node.code !== $scope.originalCode || $scope.node.uri !== $scope.originalUri;
+
+    if ($scope.checkboxState && !hasChanges) {
+      // If there are no changes and the checkbox can be unchecked, allow normal behavior
+      $scope.checkboxState = !$scope.checkboxState;
+      $scope.editEnabled = $scope.checkboxState;
+      return;
+    }
+
+    event.preventDefault(); // Prevent the checkbox state from changing
+    // Update translations (popup translations are not automatically updated if locale is changed during edit)
+    $scope.trustedEditWarning = $sce.trustAsHtml($translate.instant('warnEditCodeUri'));
+    $scope.trustedRevertWarning = $sce.trustAsHtml($translate.instant('warnRevertCodeUri'));
+    $scope.tempCheckboxState = !$scope.checkboxState; // Update the temporary state
+    if ($scope.tempCheckboxState) {
+      $('#editConfirmModal').modal('show'); // Show the modal to allow editing
     } else {
-      if ($scope.node.code !== $scope.originalCode || $scope.node.uri !== $scope.originalUri) {
-        $('#restoreConfirmModal').modal('show');
+      if (hasChanges) {
+        $('#restoreConfirmModal').modal('show'); // Show the modal to confirm reverting
       } else {
-        $scope.disableEdit();
+        $scope.disableEdit(); // Remove edit permissions
       }
     }
   };
 
   // Confirm enabling editing
   $scope.confirmEnableEdit = function() {
-    $('#editConfirmModal').modal('hide');
+    $scope.checkboxState = true;
     $scope.editEnabled = true;
+    $('#editConfirmModal').modal('hide');
   };
 
   // Cancel enabling editing
   $scope.cancelEnableEdit = function() {
+    $scope.tempCheckboxState = $scope.checkboxState;
     $('#editConfirmModal').modal('hide');
-    $scope.checkboxState = false;
   };
 
   // Confirm disabling editing and restoring values
   $scope.confirmDisableEdit = function() {
-    $('#restoreConfirmModal').modal('hide');
+    $scope.checkboxState = false
     $scope.disableEdit();
+    $('#restoreConfirmModal').modal('hide');
   };
 
   // Cancel disabling editing
   $scope.cancelDisableEdit = function() {
+    $scope.tempCheckboxState = $scope.checkboxState;
     $('#restoreConfirmModal').modal('hide');
-    $scope.checkboxState = true;
   };
 
   // Disable editing and restore original values
