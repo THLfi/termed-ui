@@ -135,7 +135,7 @@ angular.module('termed.graphs', ['ngRoute', 'termed.rest', 'termed.graphs.proper
 
   // Confirm disabling editing and restoring values
   $scope.confirmDisableEdit = function() {
-    $scope.checkboxState = false
+    $scope.checkboxState = false;
     $scope.disableEdit();
     $('#restoreConfirmModal').modal('hide');
   };
