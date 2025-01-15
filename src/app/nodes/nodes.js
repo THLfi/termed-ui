@@ -191,7 +191,14 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     { type: "p", attribute: "avoidableLabel" },
     { type: "p", attribute: "deprecatedLabel" },
     { type: "p", attribute: "definition" },
-    { type: "p", attribute: "note" }
+    { type: "p", attribute: "note" },
+    { type: "p", attribute: "definitionOld" },
+    { type: "p", attribute: "noteOld" },
+    { type: "p", attribute: "conceptDiagram" },
+    { type: "p", attribute: "status" },
+    { type: "p", attribute: "broader" },
+    { type: "p", attribute: "partOf" },
+    { type: "p", attribute: "related" },
   ];
 
   $scope.csvStatusNotInTranslation = 0;
@@ -357,7 +364,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
         element.checked = false;
       }
     }
-    document.getElementById("all_fields").checked = inputSelects.length === 7;
+    document.getElementById("all_fields").checked = inputSelects.length === $scope.boxes.length;
   };
 
   $scope.setSelectAttributes = function() {
@@ -369,7 +376,7 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
       }
     }
     $scope.selectStr = inputSelects.join(",").toString();
-    document.getElementById("all_fields").checked = inputSelects.length === 7;
+    document.getElementById("all_fields").checked = inputSelects.length === $scope.boxes.length;
   };
 
   $scope.loadMoreResults = function() {

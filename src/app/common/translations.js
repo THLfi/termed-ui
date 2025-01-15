@@ -135,6 +135,14 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     warning: "varoitus",
     yes: "kyllä",
     no: "ei",
+    // TERMED-243
+    definitionOld: 'Vanha määritelmä',
+    noteOld: 'Vanha huomautus',
+    conceptDiagram: 'Käsitekaavio',
+    status: 'Tila',
+    broader: 'Hierarkkinen yläkäsite',
+    partOf: 'Koostumussuhteinen yläkäsite',
+    related: 'Assosiatiivinen suhde',
   })
 
   .translations('en', {
@@ -263,6 +271,14 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     warning: "warning",
     yes: "yes",
     no: "no",
+    // TERMED-243
+    definitionOld: 'Old definition',
+    noteOld: 'Old note',
+    conceptDiagram: 'Concept diagram',
+    status: 'Status',
+    broader: 'Hierarchical broader concept',
+    partOf: 'Compositional broader concept',
+    related: 'Associative relation',
   });
 
 });
