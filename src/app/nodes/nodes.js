@@ -192,13 +192,14 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     { type: "p", attribute: "deprecatedLabel" },
     { type: "p", attribute: "definition" },
     { type: "p", attribute: "note" },
+    { type: "p", attribute: "link" },
     { type: "p", attribute: "definitionOld" },
     { type: "p", attribute: "noteOld" },
     { type: "p", attribute: "conceptDiagram" },
-    { type: "p", attribute: "status" },
-    { type: "p", attribute: "broader" },
-    { type: "p", attribute: "partOf" },
-    { type: "p", attribute: "related" },
+    { type: "r", attribute: "status" },
+    { type: "r", attribute: "broader" },
+    { type: "r", attribute: "partOf" },
+    { type: "r", attribute: "related" },
   ];
 
   $scope.csvStatusNotInTranslation = 0;
@@ -356,7 +357,11 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     if (document.getElementById("all_fields").checked === true) {
       for (let element of document.getElementsByClassName("input-select")) {
         element.checked = true;
-        inputSelects.push(element.value !== "id" ? "p." + element.value : element.value);
+        let boxItem = $scope.boxes.find(box => box.attribute === element.value);
+        if (boxItem) {
+          let prefix = boxItem.type ? boxItem.type + "." : "";
+          inputSelects.push(prefix + boxItem.attribute);
+        }
       }
       $scope.selectStr = inputSelects.join(",").toString();
     } else {
@@ -372,7 +377,11 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     $scope.selectStr = "";
     for (let element of document.getElementsByClassName("input-select")) {
       if (element.checked) {
-        inputSelects.push(element.value !== "id" ? "p." + element.value : element.value);
+        let boxItem = $scope.boxes.find(box => box.attribute === element.value);
+        if (boxItem) {
+          let prefix = boxItem.type ? boxItem.type + "." : "";
+          inputSelects.push(prefix + boxItem.attribute);
+        }
       }
     }
     $scope.selectStr = inputSelects.join(",").toString();

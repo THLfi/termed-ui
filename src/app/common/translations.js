@@ -136,6 +136,7 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     yes: "kyllä",
     no: "ei",
     // TERMED-243
+    link: 'Linkki',
     definitionOld: 'Vanha määritelmä',
     noteOld: 'Vanha huomautus',
     conceptDiagram: 'Käsitekaavio',
@@ -272,6 +273,7 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     yes: "yes",
     no: "no",
     // TERMED-243
+    link: 'Link',
     definitionOld: 'Old definition',
     noteOld: 'Old note',
     conceptDiagram: 'Concept diagram',
