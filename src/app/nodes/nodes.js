@@ -354,15 +354,16 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   $scope.selectAllAttributes = function() {
     const inputSelects = [];
     $scope.selectStr = "";
+    const inputElements = Array.from(document.getElementsByClassName("input-select"));
     if (document.getElementById("all_fields").checked === true) {
-      for (let element of document.getElementsByClassName("input-select")) {
+      inputElements.forEach(function(element) {
         element.checked = true;
-        let boxItem = $scope.boxes.find(box => box.attribute === element.value);
+        const boxItem = $scope.boxes.find(box => box.attribute === element.value);
         if (boxItem) {
-          let prefix = boxItem.type ? boxItem.type + "." : "";
+          const prefix = boxItem.type ? boxItem.type + "." : "";
           inputSelects.push(prefix + boxItem.attribute);
         }
-      }
+      });
       $scope.selectStr = inputSelects.join(",").toString();
     } else {
       for (let element of document.getElementsByClassName("input-select")) {
@@ -375,15 +376,16 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   $scope.setSelectAttributes = function() {
     const inputSelects = [];
     $scope.selectStr = "";
-    for (let element of document.getElementsByClassName("input-select")) {
+    const inputElements = Array.from(document.getElementsByClassName("input-select"));
+    inputElements.forEach(function(element) {
       if (element.checked) {
-        let boxItem = $scope.boxes.find(box => box.attribute === element.value);
+        const boxItem = $scope.boxes.find(box => box.attribute === element.value);
         if (boxItem) {
-          let prefix = boxItem.type ? boxItem.type + "." : "";
+          const prefix = boxItem.type ? boxItem.type + "." : "";
           inputSelects.push(prefix + boxItem.attribute);
         }
       }
-    }
+    });
     $scope.selectStr = inputSelects.join(",").toString();
     document.getElementById("all_fields").checked = inputSelects.length === $scope.boxes.length;
   };
