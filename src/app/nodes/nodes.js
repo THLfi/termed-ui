@@ -191,7 +191,15 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
     { type: "p", attribute: "avoidableLabel" },
     { type: "p", attribute: "deprecatedLabel" },
     { type: "p", attribute: "definition" },
-    { type: "p", attribute: "note" }
+    { type: "p", attribute: "note" },
+    { type: "p", attribute: "link" },
+    { type: "p", attribute: "definitionOld" },
+    { type: "p", attribute: "noteOld" },
+    { type: "p", attribute: "conceptDiagram" },
+    { type: "r", attribute: "status" },
+    { type: "r", attribute: "broader" },
+    { type: "r", attribute: "partOf" },
+    { type: "r", attribute: "related" },
   ];
 
   $scope.csvStatusNotInTranslation = 0;
@@ -346,30 +354,40 @@ angular.module('termed.nodes', ['ngRoute', 'termed.rest', 'termed.nodes.referenc
   $scope.selectAllAttributes = function() {
     const inputSelects = [];
     $scope.selectStr = "";
+    const inputElements = Array.from(document.getElementsByClassName("input-select"));
     if (document.getElementById("all_fields").checked === true) {
-      for (let element of document.getElementsByClassName("input-select")) {
+      inputElements.forEach(function(element) {
         element.checked = true;
-        inputSelects.push(element.value !== "id" ? "p." + element.value : element.value);
-      }
+        const boxItem = $scope.boxes.find(box => box.attribute === element.value);
+        if (boxItem) {
+          const prefix = boxItem.type ? boxItem.type + "." : "";
+          inputSelects.push(prefix + boxItem.attribute);
+        }
+      });
       $scope.selectStr = inputSelects.join(",").toString();
     } else {
       for (let element of document.getElementsByClassName("input-select")) {
         element.checked = false;
       }
     }
-    document.getElementById("all_fields").checked = inputSelects.length === 7;
+    document.getElementById("all_fields").checked = inputSelects.length === $scope.boxes.length;
   };
 
   $scope.setSelectAttributes = function() {
     const inputSelects = [];
     $scope.selectStr = "";
-    for (let element of document.getElementsByClassName("input-select")) {
+    const inputElements = Array.from(document.getElementsByClassName("input-select"));
+    inputElements.forEach(function(element) {
       if (element.checked) {
-        inputSelects.push(element.value !== "id" ? "p." + element.value : element.value);
+        const boxItem = $scope.boxes.find(box => box.attribute === element.value);
+        if (boxItem) {
+          const prefix = boxItem.type ? boxItem.type + "." : "";
+          inputSelects.push(prefix + boxItem.attribute);
+        }
       }
-    }
+    });
     $scope.selectStr = inputSelects.join(",").toString();
-    document.getElementById("all_fields").checked = inputSelects.length === 7;
+    document.getElementById("all_fields").checked = inputSelects.length === $scope.boxes.length;
   };
 
   $scope.loadMoreResults = function() {
